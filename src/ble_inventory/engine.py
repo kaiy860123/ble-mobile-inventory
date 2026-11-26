@@ -56,12 +56,14 @@ class InventoryEngine:
                 self.filters[key] = RssiFilter(self.config["filter_alpha"], self.config.get("median_window", 5))
             state.update(last_seen=now, rssi_dbm=obs["rssi_dbm"], filtered_rssi_dbm=self.filters[key].add(obs["rssi_dbm"]))
             device = self.roster[key]
-            ref = device.get("rssi_at_1m_dbm", obs.get("rssi_at_1m_dbm", self.config["rssi_at_1m_dbm"]))
+            ref = next(v for v in (device.get("rssi_at_1m_dbm"), obs.get("rssi_at_1m_dbm"), self.config["rssi_at_1m_dbm"]) if v is not None)
             state["distance_m"] = rssi_to_distance(state["filtered_rssi_dbm"], ref, device.get("path_loss_exponent", self.config["path_loss_exponent"]))
             if device["role"] == "target":
                 self.seen.add(key)
                 current_targets.append(key)
-        height = batch.get("scanner_height_m", self.config["scanner_height_m"])
+        height = batch.get("scanner_height_m")
+        if height is None:
+            height = self.config["scanner_height_m"]
         points, ranges = [], []
         for key, device in self.roster.items():
             state = self.devices.get(key)

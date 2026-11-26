@@ -1,0 +1,10 @@
+{
+  "id": "AG-003",
+  "revision": 1,
+  "branch": "antigravity/AG-003-experiment-summary",
+  "depends_on": ["AG-001", "AG-002"],
+  "allowed_paths": ["scripts/summarize-experiments.py", "tests/test_experiment_summary.py", "docs/report/experiments-template.csv", "docs/handoffs/AG-003-result.md"],
+  "allowed_prefixes": [],
+  "handoff": "docs/handoffs/AG-003-result.md",
+  "instruction": "依 tasks.md 的 AG-003 實作實驗彙整工具。先在交接中記錄設計與輸入格式，再自主實作及測試，無須等待人為轉貼確認。輸入既有評估 JSON 及明確的 metadata；輸出來源、版本、run_id、有效樣本、MAE/RMSE/P50/P95、成功率、召回率及限制。未知分母、無應盤點集合、未量測延遲列未提供，不猜測。測試須有手算案例、零分母/缺值/混合來源/不同版本與不重複位置；真值只供評估。不得修改定位核心、既有評估腳本或實驗資料。交接附設計、檔案、命令、實際結果、限制，最後標 ready_for_review，等待 Codex 自動審查。"
+}

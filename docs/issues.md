@@ -91,6 +91,22 @@
 - RPi：部署器在 SSH connect 逾時，未進入 SFTP；與先前已成功部署的版本區分。尚未確認是 RPi 關機、IP 更換或網路隔離，不將推測當根因。
 - 後續：RPi 重新可達後部署已打包新版並驗證實際網頁，見 TEST-012。
 
+## ISSUE-011 — 審查只監看主區，漏掉 Antigravity 真實 checkout
+
+- 日期：2026-11-26；狀態：已修正來源與派工流程。
+- 原因：Antigravity 依舊啟動文件另 clone，在本機分支提交 AG-002；主區指紋 unchanged 無法推論另一 checkout 沒有成果。
+- 修正：註冊實際外部來源、直接讀本機分支／ready handoff、官方 CLI 任務佇列、heartbeat 同時檢查外部交付及主區差異。使用者不再代貼或手動推送。
+- 證據：TEST-015，官方登入 probe 成功，AG-002 直接匯入，AG-001 真實派工已啟動。
+- 限制：仍以實際 job／diff／測試確認成功，CLI 被 soft-deny 或工作中不當作已驗收。
+
+## ISSUE-012 — 合法可選 null 觀測造成 TypeError
+
+- 日期：2026-11-26；狀態：已修正並回歸。
+- 來源：Antigravity F-06，Codex 獨立重現；schema 允許 rssi_at_1m_dbm=null，但 engine 將 None 傳入數學函式。
+- 另查：scanner_height_m=null 也會在高度相減出錯。
+- 修正：跳過 None 的參考 RSSI，沿用設備／封包／全域優先序；缺少或 null 掃描器高度採場地設定。保留正常數值的行為。
+- 驗證：regression 原先 TypeError，修正後 engine 7 測試及當次完整回歸 40 測試通過，合成評估不變。
+
 ## 新問題格式（範本）
 
 ```text

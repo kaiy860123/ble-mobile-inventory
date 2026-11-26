@@ -68,6 +68,20 @@ def test_ble_binary_contract():
     assert decode_advertisement(b"junk") is None
 
 
+def test_optional_null_reference_and_height_use_site_defaults(config):
+    source = SyntheticSource(config, noise_db=0)
+    batch, _ = source.sample(1000)
+    baseline = InventoryEngine(config)
+    baseline.ingest(batch)
+    batch['scanner_height_m'] = None
+    for obs in batch['observations']:
+        obs['rssi_at_1m_dbm'] = None
+    assert validate_batch(batch) is batch
+    engine = InventoryEngine(config)
+    assert engine.ingest(batch)
+    assert engine.snapshot(1000)['scanner']['position'] == baseline.snapshot(1000)['scanner']['position']
+
+
 def test_append_only_records_and_csv(config,tmp_path):
     engine=InventoryEngine(config);source=SyntheticSource(config)
     store=RunStore(tmp_path,engine,"demo")

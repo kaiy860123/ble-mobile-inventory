@@ -1,0 +1,10 @@
+{
+  "id": "AG-001",
+  "revision": 1,
+  "branch": "antigravity/AG-001-settings-review",
+  "depends_on": [],
+  "allowed_paths": ["tests/test_settings_independent.py", "docs/handoffs/AG-001-result.md"],
+  "allowed_prefixes": ["tests/browser/"],
+  "handoff": "docs/handoffs/AG-001-result.md",
+  "instruction": "完成座標設定的獨立驗收。先讀 docs/design/site-settings.md、src/ble_inventory/site_settings.py、server.py、web/site-settings.js 及既有測試，核對 Local 保存重載、WGS84 含旋轉、空白/NaN/越界、共線、過期 revision、雙頁面衝突、取消與預覽不寫檔、保存失敗不切換、公開端唯讀。只新增允許的獨立測試與交接結果，核心與既有前端維持只讀。能執行的實際執行；不能執行的手機/瀏覽器操作明確列未測與原因，不能由 API 測試推論 UI 通過。交接附版本、完整修改清單、逐項預期/實際、命令與證據、限制。完成後最後標 ready_for_review，暫停寫入，不詢問是否接下一任務；Codex 會自動審查及派工。"
+}

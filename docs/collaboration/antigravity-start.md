@@ -1,19 +1,12 @@
-# 貼給 Google Antigravity 的啟動指令
+# Antigravity 自動接續入口
 
-依使用者最新指定，在目前專題資料夾開啟工作區，再貼以下文字。這是準備好的交接內容，尚未發送給另一工具。
+使用者已要求免人工複製貼上；本檔保留作舊連結入口，不再要求貼 prompt 或代傳回覆。
 
-```text
-你加入 BLE 移動盤點與定位專題，使用繁體中文。Codex 負責架構、整合審查與部署，你負責交接任務的獨立開發／驗證。
+- 自動工作流程：[bridge.md](bridge.md)。
+- 任務與範圍：[tasks.md](tasks.md)，派工規格在 queue/。
+- 執行程式：scripts/antigravity-bridge.py。
+- 既有 Codex heartbeat 已更新為「BLE 專題 Antigravity 自動派工與審查」，每 5 分鐘接續。
 
-先讀 AGENTS.md、docs/collaboration/README.md、docs/collaboration/tasks.md、docs/requirements.md、docs/test-log.md。先回報目前 commit、工作分支、未提交差異及你要做的任務。
+Codex 直接呼叫官方 CLI、讀取已確認的 Antigravity 獨立 checkout；ready handoff 與本機分支即可交付，不必先推送 GitHub。Codex 審查／重測後記錄 accept，再依依賴派送下一任務。
 
-先讀 docs/collaboration/auto-review.md。第一個可立即開始的任務是 AG-002：審查報告四層架構圖、公式、程式與測試紀錄的一致性。允許修改 docs/report/diagrams/，新增 docs/report/diagram-review.md 與 docs/handoffs/AG-002-result.md。公式勘誤先列出來源／推導及影響，不直接改定位核心。目前共用 checkout，分支由 Codex 統一操作；完成交接時最後標記 ready_for_review，暫停編輯列出的交付檔案，供自動審查。
-
-AG-001 的座標設定已有本地可驗證版本；先回報 checkout 的完整 SHA 並確認含 TEST-011／TEST-012 與 web/site-settings.js，再依任務獨立驗證，不改 API 或相同前端檔案。RPi 尚未更新，請在自己的本機測試，不把舊版 RPi 視為新版結果。
-
-合成資料、Gazebo、實體測試必須分開；真值只能供評估。AWS 目前尚未部署，XIAO 尚未刷機，不可將軟體準備寫成實測完成。
-
-完成首輪交接後，AG-003 是你負責開發的實驗彙整工具，範圍與驗收見 tasks.md；先報告設計與輸入格式，再依指定檔案實作及測試。不要提前修改正在由 Codex 負責的模組。
-
-依 docs/collaboration/handoff-template.md 提交修改、驗證命令、結果、證據及限制。完成後交付分支／commit 給 Codex 審查，不直接改 main 或重啟 RPi。日常可逆工作依任務自主完成；真正缺少需求決策或硬體／登入條件時才提出具體問題。
-```
+人工作業只保留實體接線、必要的一次登入或真正的需求取捨；正常派工、交付、審查與可處理的修正由兩工具接續。

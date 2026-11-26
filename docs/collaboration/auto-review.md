@@ -2,6 +2,8 @@
 
 2026-11-26 使用者指定：兩工具共用目前專題資料夾。此指示取代先前要求 Antigravity 另 clone 的預設。
 
+同日後續查核：Antigravity 已自行在另一 scratch checkout 完成並提交 AG-002。使用者要求免人工轉貼；目前以 [bridge.md](bridge.md) 的官方 CLI 派工與本機 Git 交付補足此來源。以下指紋流程繼續負責主工作區；heartbeat 必須先檢查 bridge status，不能因主區 unchanged 就略過外部交付／派工。
+
 ## 觸發與偵測
 
 - Codex 本聊天的 heartbeat 每 5 分鐘檢查一次；這是排程輪詢，非檔案系統即時事件。

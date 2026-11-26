@@ -3,7 +3,7 @@
   "baseline": "9225d6be262071ab8ad31d6fb1f8b76526a5b04e（程式交付基準；後續文件更新另計）",
   "milestones": [{"date":"2026-12-10","label":"主要功能"},{"date":"2026-12-17","label":"整合驗證"},{"date":"2026-12-24","label":"展示與報告"}],
   "tasks": [
-    {"id":"CDX-AUTO-REVIEW","title":"Antigravity 變更自動審查","owner":"Codex heartbeat","status":"verified","scope":"排程 ACTIVE；背景首輪待執行紀錄","evidence":"每 5 分鐘檢查；5 個偵測規則測試通過，涵蓋未提交／新增／修改／刪除及版本競爭","next":"有穩定差異即審查；ready_for_review 後修正與整合，見 auto-review.md"},
+    {"id":"CDX-AUTO-REVIEW","title":"自動派工與雙向交接","owner":"Codex heartbeat＋官方 agy","status":"verified","scope":"CLI 登入探測與 AG-001 真實派工已執行","evidence":"每 5 分鐘檢查兩個 checkout；官方 CLI 1.5.18 回覆成功，橋接器 9 測試通過；AG-002 本機分支已直接匯入／驗收","next":"依交付、測試與 accept 接續佇列；不再人工轉貼，見 bridge.md"},
     {"id":"CORE","title":"兩階段定位與座標轉換","owner":"Codex","status":"verified","scope":"軟體／合成案例","evidence":"TEST-002、TEST-005；目前完整 Python 測試 27 passed","next":"實體校正與獨立真值評估"},
     {"id":"WEB","title":"網頁、回放與公開頁","owner":"Codex","status":"verified","scope":"新版已發布；公開端唯讀","evidence":"GitHub Actions 45841081307 success；公開回放正常，座標設定不可用；TEST-013","next":"RPi 新版部署與實機資料串接"},
     {"id":"RPI","title":"RPi 收集服務","owner":"Codex","status":"verified","scope":"既有部署／尚無專題 Tag","evidence":"TEST-009、TEST-010：systemd、HTTP、BLE discovery","next":"接收刷機後的 XIAO 封包"},
@@ -11,9 +11,9 @@
     {"id":"HW-001","title":"刷機與實體精度實驗","owner":"使用者＋Codex","status":"blocked","scope":"尚未執行","evidence":"TEST-006 六種韌體編譯通過；使用者指定稍後接線","next":"連接 XIAO、標記 ID、量測 Anchor 與校正 RSSI"},
     {"id":"SIM-001","title":"Gazebo／SITL 整合","owner":"Gazebo 組員＋Codex","status":"blocked","scope":"外部交付狀態未知","evidence":"已有共用 schema、觀測送出器及獨立真值格式","next":"交付版本、觀測 JSONL、真值與操作說明"},
     {"id":"CDX-CLOUD","title":"AWS 即時資料","owner":"Codex＋使用者登入","status":"blocked","scope":"模板與程式已備妥／未部署","evidence":"TEST-007：尚無可用 AWS 執行登入環境","next":"登入後核對 Free Plan，部署 IoT／Cognito 並測試"},
-    {"id":"AG-002","title":"架構圖與公式獨立核對","owner":"Antigravity","status":"todo","scope":"交接文件已備妥／未啟動","evidence":"docs/collaboration/antigravity-start.md","next":"讀 AGENTS.md，執行 AG-002 並交付勘誤"},
-    {"id":"AG-001","title":"座標設定獨立驗收","owner":"Antigravity","status":"todo","scope":"本地可驗證；尚未啟動","evidence":"本次交付 commit；TEST-011、TEST-012，驗收範圍已列於 tasks.md","next":"先回報完整 SHA，依共用 checkout 寫檔規則驗證，完成後 ready_for_review"},
-    {"id":"AG-003","title":"實驗彙整工具開發","owner":"Antigravity＋Codex 審查","status":"todo","scope":"首輪核對／驗收後開發","evidence":"tasks.md 已定義允許檔案、輸入 metadata、輸出與手算測試","next":"先設計輸入格式，再實作成功率／召回率等彙整；缺資料不補造"},
+    {"id":"AG-002","title":"架構圖與公式獨立核對","owner":"Antigravity＋Codex 審查","status":"verified","scope":"六份文件已整合／accept；圖形版面未渲染","evidence":"交付 28d61d6；Codex 審查報告、合成評估重現、null regression 與 40 測試回歸","next":"低優先勘誤繼續列管；實測結果與圖形版面另驗證"},
+    {"id":"AG-001","title":"座標設定獨立驗收","owner":"Antigravity CLI","status":"in_progress","scope":"已自動啟動於獨立 checkout","evidence":"橋接器已建立任務分支並派工，實際出現獨立 API 與 browser 測試檔；尚待 ready handoff","next":"交付後 Codex 自動讀取分支、檢查差異及重跑測試"},
+    {"id":"AG-003","title":"實驗彙整工具開發","owner":"Antigravity＋Codex 審查","status":"todo","scope":"佇列已備妥；等待 AG-001 驗收","evidence":"queue/AG-003.json 已定義輸入／範圍／依賴；AG-002 已 accept","next":"AG-001、AG-002 均 accept 後自動派送設計、實作與測試；缺資料不補造"},
     {"id":"CDX-REPORT","title":"專題報告與實驗結果","owner":"Codex＋Antigravity＋組員","status":"in_progress","scope":"架構與方法草稿完成","evidence":"四種 Mermaid 視圖、公式及程式對照已建立","next":"加入實機／Gazebo／AWS 證據，再產出最終繳交版"}
   ]
 }

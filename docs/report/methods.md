@@ -15,6 +15,8 @@
 | \(d\)、\(\rho\) | 估計三維斜距、扣除高度差後的水平距離 | m |
 | \(\theta\) | Local +X 相對正東的逆時針旋轉角 | 設定用度，計算用弧度 |
 | \(\varphi,\lambda,h\) | WGS84 緯度、經度、橢球高 | 設定為度／m |
+| \(z,\Delta h\) | Local 相對高度、天線高度差 | m |
+| \(m,W,B\) | 參考觀測數、\(W=\operatorname{diag}(w_i)\)、包圍盒基線 | 筆、無單位、m |
 
 重要區別：\(P_{d_0}\) 是接收訊號的校正值，不是晶片射頻發射功率；RSSI 濾波與測距也不提供方向資訊。
 
@@ -33,6 +35,8 @@ s_k=\alpha\widetilde r_k+(1-\alpha)s_{k-1},\qquad s_0=\widetilde r_0
 目前範例 \(w=3\)、\(\alpha=0.65\)。中位數抑制短時離群，EMA 平滑抖動；移動掃描器會受到時間延遲，不能只以畫面平滑判斷定位較準。設備長時間未收到後重新建立濾波器，避免混入過舊觀測。
 
 實作：`src/ble_inventory/positioning.py:RssiFilter`、`engine.py:ingest`。
+
+上述參數來自場地設定；直接呼叫 `RssiFilter()` 的函式預設仍是 alpha=0.4、window=5。重置條件為相鄰接收間隔大於 stale_after_s（範例 10 s），不是 Anchor 解算視窗的 3 s。
 
 ## 3. RSSI 測距與校正
 
@@ -75,6 +79,8 @@ r(d)=P_{d_0}-10n\log_{10}(d/d_0)+\varepsilon
 
 實作：`positioning.py:horizontal_distance`。
 
+WGS84 輸入時，georeference.height_m 必須對應 Local z=0 基準面的橢球高；scanner_height_m 與 Target 高度則是相對此面的高度。不能同時將原點橢球高留 0、Anchor 填實際橢球高、RPi 填離地高度，而期待高度差正確。
+
 ## 5. 第一階段：Anchor 求掃描器位置
 
 每個 Anchor 形成距離限制：
@@ -94,12 +100,14 @@ r(d)=P_{d_0}-10n\log_{10}(d/d_0)+\varepsilon
 
 至少需要三個具良好二維幾何的參考點；「有三個點」不保證可定位，若近乎共線仍須拒絕或提示品質不足。
 
+差分索引為 i=1,…,m−1，A 有 m−1 列、2 欄。使用最近 anchor_ttl_s（範例 3 s）內的 Anchor 觀測，移動中不同 Anchor 的測距可能非同一時間，應列為誤差來源。
+
 ## 6. 非線性改良與穩健加權
 
 目前求解器採非線性距離殘差：
 
 \[
-e_i(p)=\|p-a_i\|-\rho_i
+v_i(p)=\|p-a_i\|-\rho_i
 \]
 
 使用 Huber 型加權的迭代最小平方法：
@@ -109,7 +117,7 @@ L_H(e)=\begin{cases}\tfrac12 e^2,&|e|\le c\\c(|e|-\tfrac12c),&|e|>c\end{cases}
 \]
 
 \[
-w_i=\min\left(1,\frac{c}{\max(|e_i|,10^{-6})}\right),\qquad c=1.5\text{ m}
+w_i=\min\left(1,\frac{c}{\max(|v_i|,10^{-6})}\right),\qquad c=1.5\text{ m}
 \]
 
 \[
@@ -117,7 +125,7 @@ J_i=\frac{(p-a_i)^T}{\max(\|p-a_i\|,10^{-6})}
 \]
 
 \[
-\Delta=\arg\min_\delta\|W^{1/2}(J\delta-e)\|_2^2,
+\Delta=\arg\min_\delta\|W^{1/2}(J\delta-v)\|_2^2,
 \qquad p\leftarrow p-\Delta
 \]
 
@@ -132,6 +140,8 @@ R_{range}=\sqrt{\frac1m\sum_i(\|\widehat p-a_i\|-\rho_i)^2}
 範例最大可接受殘差為 2.5 m，超過則不更新有效位置。**小殘差不代表小真實位置誤差**；受共同偏差影響時，模型可自洽但仍偏離真值。
 
 實作：`positioning.py:multilaterate`、`engine.py`。
+
+此處 v 為有號測距殘差，與 §10 的非負真實位置誤差 e 分開。求解內採 Huber 權重，但品質閘門使用未加權 RMS；因此離群值仍可能使有效解被拒絕，或使有偏解在殘差門檻內通過。
 
 ## 7. 第二階段：移動觀測求靜止 Target
 
@@ -151,6 +161,8 @@ B=\sqrt{(\max x_k-\min x_k)^2+(\max y_k-\min y_k)^2}\ge1.5\text{ m}
 此外仍檢查共線／條件數。此基線是觀測位置包圍盒對角長，不是每兩個採樣點都須相距 1.5 m。
 
 第一階段的位置誤差會傳遞到第二階段；Target 巡查期間靜止是本方法的基本假設。實際飛行控制使用的導航位置與本專題 BLE 掃描器估計位置應分開。
+
+240 筆上限與 0.15 m 位移門檻目前是程式常數；窗口時間、最低樣本及基線來自設定。Target 解與掃描器解同樣套用 max_residual_m（範例 2.5 m）品質閘門。
 
 ## 8. Local、ENU 與 WGS84
 
@@ -227,6 +239,8 @@ C_{visible}(t)=\sum_{i\in Targets}\mathbb 1[0\le t-t_i^{last}\le\tau],\qquad\tau
 
 中途關掉 Target，\(C_R\) 保留，\(C_{visible}\) 超時後下降。開始新任務才清空本次集合；Anchor 不列入 Target 計數。
 
+僅場地名單中的 Target 計入 S_R，未登錄 ID 略過。掃描器若超過 anchor_ttl_s 未有新觀測批次，另標近期無有效觀測；這與 Target 的 10 s 可見期限不同。
+
 ## 10. 評估指標
 
 在獨立真值 \(p_k^*\) 下定義水平位置誤差：
@@ -256,11 +270,11 @@ P50=Q_{0.5}(\{e_k\}),\quad P95=Q_{0.95}(\{e_k\})
 
 ## 11. 目前可引用的合成結果
 
-| 設備 | 有效位置樣本 | MAE（m） | RMSE（m） | P95（m） |
-| --- | ---: | ---: | ---: | ---: |
-| RPi01 | 90 | 1.043 | 1.106 | 1.734 |
-| T01 | 85 | 0.464 | 0.802 | 1.809 |
-| T02 | 65 | 0.220 | 0.349 | 1.029 |
+| 設備 | 有效位置樣本 | MAE（m） | RMSE（m） | P50（m） | P95（m） |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| RPi01 | 90 | 1.043 | 1.106 | 1.029 | 1.734 |
+| T01 | 85 | 0.464 | 0.802 | 0.305 | 1.809 |
+| T02 | 65 | 0.220 | 0.349 | 0.116 | 1.029 |
 
 來源：TEST-005、固定種子合成觀測及獨立 `tests/fixtures/truth.jsonl`。不是 Gazebo，也不是 BLE 實測。T02 的廣播有中斷情境，不能把 65/90 直接當成與實驗設計無關的定位失敗率。
 

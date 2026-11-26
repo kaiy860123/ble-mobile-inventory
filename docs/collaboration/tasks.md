@@ -2,6 +2,8 @@
 
 以下是可交接的任務規劃，不代表另一工具已開始執行。
 
+最新：AG-002 的本機交付 `28d61d6dd4e82002d53e17a4119c54aba061c679` 已找到並匯入專用 ref 待審；AG-001 已由官方 CLI 自動派工。實際執行狀態以 bridge status 與交接為準，不再要求使用者代貼。
+
 ## CDX-AUTO-REVIEW — Antigravity 變更後自動審查
 
 - 使用者指定：兩工具使用同一專題資料夾。
@@ -21,7 +23,7 @@
 
 ## AG-001 — 座標設定獨立驗證
 
-- 負責：Antigravity；狀態：待接手。
+- 負責：Antigravity；狀態：已由 Codex 透過官方 CLI 自動啟動，結果待交付／驗收；以 bridge status 為準。
 - 前置：CDX-SETTINGS 交付可驗證版本（本次已完成本地驗證，見 `docs/handoffs/CDX-SETTINGS.md`；接手時回報完整 SHA）。
 - 可新增：`tests/test_settings_independent.py`、`docs/handoffs/AG-001-result.md`，必要時新增 `tests/browser/` 的可重現案例。
 - 只讀：核心、設定 API、既有前端程式。
@@ -31,7 +33,7 @@
 
 ## AG-002 — 報告四層圖與公式對照
 
-- 負責：Antigravity；狀態：待接手，可先獨立開始。
+- 負責：Antigravity；狀態：交付 28d61d6 已完成 Codex 文件整合審查與 accept，見 docs/reviews/2026-11-26-AG-002-codex.md。
 - 可修改：`docs/report/diagrams/`、新增 `docs/report/diagram-review.md` 與 `docs/handoffs/AG-002-result.md`。
 - 只讀核對：`docs/report/methods.md`、定位／座標程式、需求與測試紀錄。
 - 驗收：四層圖一致、每條連線有資料／協定語意、現有與待部署標示一致；逐式檢查符號、單位、旋轉方向、殘差與真實誤差的區別。

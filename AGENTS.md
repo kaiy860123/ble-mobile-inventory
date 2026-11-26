@@ -5,7 +5,7 @@
 ## 開始工作
 
 1. 讀 `docs/collaboration/README.md`，確認任務、分支及檔案負責人。
-2. 依 `docs/collaboration/tasks.md` 選取已交付給你的任務；目前依使用者指示共用 checkout，寫檔交接與分支操作依 `docs/collaboration/auto-review.md`。
+2. 依 `docs/collaboration/tasks.md` 選取已交付任務；Antigravity 實際來源與自動派工依 `docs/collaboration/bridge.md`。主工作區分支由 Codex 統一操作；共用檔案時再依 `auto-review.md` 交接。
 3. 先確認目前差異與既有測試證據，再修改任務允許的檔案。
 
 ## 依工作類型讀取
@@ -16,6 +16,7 @@
 - 定位、誤差或報告公式：`docs/report/methods.md`，逐項核對實作。
 - 報告圖表與結果：`docs/report/report-draft.md`；將未完成項目保留為待驗證。
 - Antigravity 新增／修改、排程審查或交接：`docs/collaboration/auto-review.md`，依共用資料夾與 fingerprint 流程執行。
+- Antigravity 自動派工、外部 checkout 或免轉貼接續：先讀 `docs/collaboration/bridge.md`，以實際來源與任務佇列取代共用資料夾假設。
 - 部署／刷機：`docs/runbook.md`、`docs/aws-deployment.md`。
 
 ## 交付
