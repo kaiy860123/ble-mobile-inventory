@@ -15,7 +15,7 @@
 
 ## Checkout 與分支
 
-1. 2026-11-26 使用者指定兩工具使用同一專題資料夾；目前採共用 checkout，優先依 [自動審查流程](auto-review.md) 分配寫檔時段。若日後改為獨立 clone 再更新來源路徑。
+1. 2026-11-26 原先依使用者提供的主資料夾規劃共用 checkout；後續查核發現 Antigravity 已在獨立 scratch checkout 交付。現行自動派工沿用此來源，依 [bridge.md](bridge.md) 註冊與驗證；主區指紋監看仍涵蓋使用者直接放入主資料夾的變更。
 2. 共用 checkout 的分支由 Codex 統一切換；Antigravity 回報基準 commit 並在任務範圍編輯，避免另一工具工作中被切換檔案版本。
 3. 同一時間每個檔案只指定一位修改者；要跨範圍先列出所需修改及影響。
 4. Antigravity 交付 commit SHA 或分支；Codex 在自己的 checkout 審查及整合，再驗證合併後狀態。

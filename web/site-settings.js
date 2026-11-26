@@ -15,7 +15,7 @@ export function initSiteSettings(context, onState, notify) {
     const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement('select');
     for(const [v,name] of options){const o=document.createElement('option');o.value=v;o.textContent=name;input.append(o);}input.value=value;wrap.append(input);parent.append(wrap);return input;
   }
-  let frame,bounds,scanner,status,geoEnabled,geoFields,geoPanel;
+  let frame,bounds,scanner,status,geoEnabled,geoFields,geoPanel,geoSource;
   function render(settings){
     original=settings;rows=[];targetRows=[];checked=false;$('site-save').disabled=true;$('site-preview').textContent='';
     const box=$('site-fields');box.replaceChildren();box.className='site-grid';
@@ -27,7 +27,10 @@ export function initSiteSettings(context, onState, notify) {
     geoPanel=document.createElement('div');geoPanel.className='site-grid';box.append(geoPanel);
     const g=settings.georeference??{};
     geoFields=Object.fromEntries([['latitude_deg','原點緯度（度）'],['longitude_deg','原點經度（度）'],['height_m','原點橢球高（m）'],['rotation_deg','Local X 自東向逆時針角（度）'],['transform_id','轉換版本 ID']].map(([key,label])=>[key,field(geoPanel,label,g[key]??(key==='transform_id'?'site-v1':0),key==='transform_id'?'text':'number')]));
-    const setGeo=()=>{geoPanel.hidden=geoEnabled.value!=='yes';for(const input of Object.values(geoFields))input.disabled=geoPanel.hidden;};setGeo();geoEnabled.addEventListener('change',setGeo);
+    const sources=[['example','示例／尚未實測'],['measured','已完成地理對準量測']];
+    if(g.source&&!sources.some(([value])=>value===g.source))sources.push([g.source,`原有來源：${g.source}`]);
+    geoSource=select(geoPanel,'地理原點來源',sources,g.source??'example');
+    const setGeo=()=>{geoPanel.hidden=geoEnabled.value!=='yes';for(const input of [...Object.values(geoFields),geoSource])input.disabled=geoPanel.hidden;};setGeo();geoEnabled.addEventListener('change',setGeo);
     const anchors=$('anchor-fields');anchors.replaceChildren();
     for(const a of settings.anchors){
       const row=document.createElement('fieldset');const title=document.createElement('legend');title.textContent=a.id;row.append(title);anchors.append(row);
@@ -46,7 +49,7 @@ export function initSiteSettings(context, onState, notify) {
     if(!form.reportValidity())throw new Error('請填入完整且有效的欄位');
     const n=input=>{if(input.value.trim()==='')throw new Error('座標不可空白');const v=Number(input.value);if(!Number.isFinite(v))throw new Error('請輸入有限數值');return v;};
     return {frame_id:frame.value.trim(),bounds_m:bounds.map(n),scanner_height_m:n(scanner),configuration_status:status.value,
-      georeference:geoEnabled.value==='yes'?{...Object.fromEntries(Object.entries(geoFields).map(([k,v])=>[k,k==='transform_id'?v.value.trim():n(v)])),source:original.georeference?.source??'measured'}:null,
+      georeference:geoEnabled.value==='yes'?{...Object.fromEntries(Object.entries(geoFields).map(([k,v])=>[k,k==='transform_id'?v.value.trim():n(v)])),source:geoSource.value}:null,
       anchors:rows.map(r=>r.mode.value==='local'?{id:r.id,position:r.xyz.map(n)}:{id:r.id,position_wgs84:Object.fromEntries(['latitude_deg','longitude_deg','height_m'].map((k,i)=>[k,n(r.llh[i])]))}),
       targets:targetRows.map(t=>({id:t.id,height_m:n(t.input)}))};
   }
@@ -56,12 +59,13 @@ export function initSiteSettings(context, onState, notify) {
     if(!r.ok)throw new Error(r.status===409?'設定版本已變更。請先另行記錄你的修改，再按重新載入。':await r.text());return r.json();
   }
   async function run(action){if(busy)return;busy=true;$('site-error').textContent='';for(const id of ['site-check','site-save','site-reload'])$(id).disabled=true;
-    try{await action();}catch(error){$('site-error').textContent=error.message;checked=false;}finally{busy=false;$('site-check').disabled=false;$('site-reload').disabled=false;$('site-save').disabled=!checked;}}
+    try{await action();}catch(error){$('site-error').textContent=error.message;$('site-preview').textContent='';checked=false;}finally{busy=false;$('site-check').disabled=false;$('site-reload').disabled=false;$('site-save').disabled=!checked;}}
   async function load(){const data=await request('');revision=data.revision;render(data.settings);}
   button.onclick=()=>run(async()=>{await load();dialog.showModal();});
   $('site-reload').onclick=()=>run(load);$('site-cancel').onclick=()=>dialog.close();
-  form.addEventListener('input',()=>{checked=false;$('site-save').disabled=true;});
-  form.addEventListener('change',()=>{checked=false;$('site-save').disabled=true;});
+  function invalidate(){checked=false;$('site-save').disabled=true;$('site-preview').textContent='';}
+  form.addEventListener('input',invalidate);
+  form.addEventListener('change',invalidate);
   $('site-check').onclick=()=>run(async()=>{const data=await request('/preview',{settings:collect()});
     $('site-preview').textContent=[...data.settings.anchors.map(a=>`${a.id} Local: ${a.position.map(v=>v.toFixed(3)).join(', ')} m${a.computed_wgs84?` · WGS84: ${a.computed_wgs84.latitude_deg.toFixed(7)}, ${a.computed_wgs84.longitude_deg.toFixed(7)}`:''}`),...data.warnings].join('\n');checked=true;});
   form.onsubmit=e=>{e.preventDefault();if(!checked||busy)return;run(async()=>{const data=await request('',{expected_revision:revision,settings:collect()});onState(data.state);dialog.close();notify('場地設定已保存，已開始新巡查；舊紀錄保留。');});};

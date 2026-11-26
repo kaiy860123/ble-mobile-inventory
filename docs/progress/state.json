@@ -12,8 +12,8 @@
     {"id":"SIM-001","title":"Gazebo／SITL 整合","owner":"Gazebo 組員＋Codex","status":"blocked","scope":"外部交付狀態未知","evidence":"已有共用 schema、觀測送出器及獨立真值格式","next":"交付版本、觀測 JSONL、真值與操作說明"},
     {"id":"CDX-CLOUD","title":"AWS 即時資料","owner":"Codex＋使用者登入","status":"blocked","scope":"模板與程式已備妥／未部署","evidence":"TEST-007：尚無可用 AWS 執行登入環境","next":"登入後核對 Free Plan，部署 IoT／Cognito 並測試"},
     {"id":"AG-002","title":"架構圖與公式獨立核對","owner":"Antigravity＋Codex 審查","status":"verified","scope":"六份文件已整合／accept；圖形版面未渲染","evidence":"交付 28d61d6；Codex 審查報告、合成評估重現、null regression 與 40 測試回歸","next":"低優先勘誤繼續列管；實測結果與圖形版面另驗證"},
-    {"id":"AG-001","title":"座標設定獨立驗收","owner":"Antigravity CLI","status":"in_progress","scope":"已自動啟動於獨立 checkout","evidence":"橋接器已建立任務分支並派工，實際出現獨立 API 與 browser 測試檔；尚待 ready handoff","next":"交付後 Codex 自動讀取分支、檢查差異及重跑測試"},
-    {"id":"AG-003","title":"實驗彙整工具開發","owner":"Antigravity＋Codex 審查","status":"todo","scope":"佇列已備妥；等待 AG-001 驗收","evidence":"queue/AG-003.json 已定義輸入／範圍／依賴；AG-002 已 accept","next":"AG-001、AG-002 均 accept 後自動派送設計、實作與測試；缺資料不補造"},
+    {"id":"AG-001","title":"座標設定獨立驗收","owner":"Antigravity＋Codex 審查","status":"verified","scope":"已自動交付／accept；browser 與實機限制保留","evidence":"291f0d1 交付；Codex 80 個獨立案例重跑通過，四項發現修正，非 browser 全部 128 passed","next":"CI browser、完整 bundle 與現場複驗依證據補齊"},
+    {"id":"AG-003","title":"實驗彙整工具開發","owner":"Antigravity CLI＋Codex 審查","status":"in_progress","scope":"依兩項 accept 已自動派送","evidence":"bridge 已建立 AG-003 任務分支並呼叫官方 CLI；結果尚待交付","next":"產生工具、手算測試及 ready handoff，Codex 自動審查；缺資料不補造"},
     {"id":"CDX-REPORT","title":"專題報告與實驗結果","owner":"Codex＋Antigravity＋組員","status":"in_progress","scope":"架構與方法草稿完成","evidence":"四種 Mermaid 視圖、公式及程式對照已建立","next":"加入實機／Gazebo／AWS 證據，再產出最終繳交版"}
   ]
 }

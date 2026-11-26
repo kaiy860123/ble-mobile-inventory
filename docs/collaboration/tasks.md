@@ -23,7 +23,7 @@
 
 ## AG-001 — 座標設定獨立驗證
 
-- 負責：Antigravity；狀態：已由 Codex 透過官方 CLI 自動啟動，結果待交付／驗收；以 bridge status 為準。
+- 負責：Antigravity；狀態：自動交付 291f0d1 已完成 Codex 審查／accept；80 個獨立 API 案例重跑通過，四項發現已修正，browser／現場限制見審查報告。
 - 前置：CDX-SETTINGS 交付可驗證版本（本次已完成本地驗證，見 `docs/handoffs/CDX-SETTINGS.md`；接手時回報完整 SHA）。
 - 可新增：`tests/test_settings_independent.py`、`docs/handoffs/AG-001-result.md`，必要時新增 `tests/browser/` 的可重現案例。
 - 只讀：核心、設定 API、既有前端程式。
@@ -41,7 +41,7 @@
 
 ## AG-003 — 實驗彙整工具開發（AG-001／AG-002 後）
 
-- 負責：Antigravity 開發，Codex 審查；狀態：todo。
+- 負責：Antigravity 開發，Codex 審查；狀態：AG-001／AG-002 均 accept，已由 bridge 自動派工，實際結果待交付／審查。
 - 可新增：`scripts/summarize-experiments.py`、`tests/test_experiment_summary.py`、`docs/report/experiments-template.csv`、`docs/handoffs/AG-003-result.md`。既有定位核心、評估腳本與原始資料維持只讀。
 - 輸入：既有評估 JSON，加上明確填寫的實驗 metadata（來源、場地、版本、run_id、應評估時點／應盤點集合、缺測原因）。
 - 輸出：可比較的實驗表，列有效樣本、MAE／RMSE／P50／P95、定位成功率、盤點召回率及限制；若沒有分母／應盤點集合，輸出未提供，不猜測。

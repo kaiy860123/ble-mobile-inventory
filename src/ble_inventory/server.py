@@ -101,8 +101,10 @@ def create_app(config, root, mode="demo", ingest_token=None, config_path=None):
             raise web.HTTPInsufficientStorage(text="無法保存設定，原設定繼續使用")
         finally:
             if prepared:
-                prepared.close()
-                (prepared.raw / "aborted.txt").write_text("Settings transaction was not committed", encoding="utf-8")
+                with contextlib.suppress(OSError):
+                    prepared.close()
+                with contextlib.suppress(OSError):
+                    (prepared.raw / "aborted.txt").write_text("Settings transaction was not committed", encoding="utf-8")
 
     async def state(request):
         return web.json_response(current(), headers={"Cache-Control": "no-store"})

@@ -41,9 +41,9 @@ def test_wrong_repository_is_rejected(monkeypatch):
 def test_session_permissions_are_scoped_and_do_not_enable_global_bypass():
     settings = bridge.session_settings({'allowed_paths': ['tests/a.py'], 'allowed_prefixes': []}, '/project/.venv/Scripts/python.exe')
     rules = settings['permissions']
-    assert 'write_file(tests/a.py)' in rules['allow']
-    assert 'write_file(src/)' in rules['deny']
-    assert 'command(git push)' in rules['deny']
+    assert f'write_file({bridge.ROOT / "tests/a.py"})' in rules['allow']
+    assert f'write_file({bridge.ROOT / "src"})' in rules['deny']
+    assert 'command(*)' in rules['deny']
     assert not any('(*)' in rule for rule in rules['allow'])
     assert 'ask' not in rules
 
@@ -54,6 +54,19 @@ def test_session_permissions_preserve_existing_deny_and_ask():
     assert 'command(custom-deploy)' in result['permissions']['deny']
     assert result['permissions']['ask'] == ['command(*)']
     assert original == {'deny': ['command(custom-deploy)'], 'ask': ['command(*)']}
+
+
+def test_editing_worker_has_no_native_command_grants():
+    rules = bridge.session_settings({'allowed_paths': ['tests/a.py'], 'allowed_prefixes': []}, '/venv/python')['permissions']['allow']
+    assert not any(rule.startswith('command(') for rule in rules)
+    assert 'command(*)' in bridge.session_settings({'allowed_paths': [], 'allowed_prefixes': []}, '/venv/python')['permissions']['deny']
+
+
+def test_sandbox_permission_paths_are_absolute_and_cannot_escape(tmp_path):
+    settings = bridge.session_settings({'allowed_paths': ['tests/a.py'], 'allowed_prefixes': []}, '/venv/python', workspace=tmp_path)
+    assert f'write_file({tmp_path / "tests/a.py"})' in settings['permissions']['allow']
+    with pytest.raises(ValueError, match='outside'):
+        bridge.session_settings({'allowed_paths': ['../outside.py'], 'allowed_prefixes': []}, '/venv/python', workspace=tmp_path)
 
 
 def test_dispatch_does_not_repeat_existing_job(tmp_path, monkeypatch):

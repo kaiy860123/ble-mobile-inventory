@@ -66,7 +66,7 @@ def prepare_edit(original, settings):
         for k in ("latitude_deg", "longitude_deg", "height_m", "rotation_deg"):
             number(geo.get(k, 0), 10000)
         for k in ("transform_id", "source"):
-            if k in geo and (not isinstance(geo[k], str) or not 1 <= len(geo[k]) <= 64):
+            if k in geo and (not isinstance(geo[k], str) or not 1 <= len(geo[k]) <= 64 or not geo[k].strip()):
                 raise ValueError("地理原點識別欄位無效")
         GeoReference(**geo)
     candidate = copy.deepcopy(original)

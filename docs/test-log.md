@@ -137,6 +137,25 @@
 - 當次完整 Python 回歸 40 passed in 1.90s；後續增加 receipt 競爭案例，橋接器目標測試 10 passed。
 - 重跑合成評估數值一致，Markdown 本地連結失效 0；未渲染 Mermaid，不宣稱版面驗收。
 
+## TEST-017 — 首輪自動交付 AG-001 與 Codex 獨立驗收
+
+- 官方 CLI 實際完成，returncode=0、provider_status=SUCCESS；橋接器驗證 HEAD／範圍與 ready handoff 後提交三檔，交付 SHA `291f0d13c43fd9d589e9925f447168f8cc5b00eb`。
+- Codex 直接 import，不需人工推送；閱讀獨立 API／數值測試後，實際重跑 80 passed in 0.98s。
+- 修正四項發現後，命令 `python -m pytest -q --ignore=tests/browser`：126 passed in 2.35s；npm run build 成功。
+- 新 regression：純空白 transform_id／source 拒絕、aborted.txt 因磁碟滿也失敗時仍回 507；UI 編輯／錯誤清空舊預覽、原點來源改為獨立明示欄位且新值預設 example。
+- Browser：交付者回報其基準版實際 108 passed（含 B1–B8）；Codex 本機未執行該 CDP 腳本，閱讀後納入 CI 並補修正後斷言，不將提供者數字列為 Codex 重跑。
+- 審查與 accept：docs/reviews/2026-11-26-AG-001-codex.md；兩項 accept 後已自動派送 AG-003。
+- 限制：正式 bundle、實體手機、RPi 新版與 AWS 未由此驗收；CI browser 結果另查核。
+
+## TEST-018 — Windows headless 限制與編輯階段分工
+
+- AG-003 前兩次受阻均被橋接器檔案／handoff 檢查擋下，未將 CLI returncode=0／SUCCESS 當成完成。
+- 只讀 command 探測查明：Windows 權限匹配需要 regex；sandbox 相對 write_file 路徑報 non-absolute；修正絕對路徑後命令本身仍因終端未輸出逾時。失敗紀錄保留於私密 artifacts。
+- 採更窄分工：Antigravity 編輯檔案，Codex 執行所有命令與測試；不放寬或關閉 sandbox。
+- 實際檔案探測：CLI 明確 deny command(*)，只 allow 一個忽略檔的絕對路徑，回傳 0、file_verified=true、stderr 0 bytes。
+- 最新橋接器目標測試：12 passed，包含絕對路徑／越界拒絕與編輯 worker 不取得命令權限。
+- 已保留原分支／HEAD／成果，依 bounded resume 接續 AG-003 第三次；其結果以後續實際交付判斷，不在此先標完成。
+
 ## 新測試格式（範本）
 
 ```text
@@ -153,3 +172,9 @@ TEST-NNN — 測試名稱
 證據與輸出路徑：
 修正與重測 TEST：
 ```
+
+## TEST-019：自動派工整合最終回歸（2026-11-26）
+
+- 命令：`.venv/Scripts/python.exe -X utf8 -m pytest -q --ignore=tests/browser`。
+- 實際結果：128 passed in 2.38s；包含 80 個 Antigravity 獨立 API 案例及 12 個 bridge 測試。
+- browser 測試未在本機執行；CLI 任務 AG-003 第三次以僅檔案工具模式執行中，尚無交付，不能列為通過。

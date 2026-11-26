@@ -99,3 +99,39 @@ def test_settings_unavailable_without_explicit_path(config, tmp_path):
             assert not b['settings_editable']
             assert (await client.get('/api/settings', headers={'X-Control-Token': b['control_token']})).status == 404
     asyncio.run(scenario())
+
+
+@pytest.mark.parametrize('field', ['transform_id', 'source'])
+def test_whitespace_georeference_identifiers_rejected(config, field):
+    settings = editable(config)
+    settings['georeference'] = dict(latitude_deg=25, longitude_deg=121.5, height_m=0, rotation_deg=0, transform_id='site-v1', source='example')
+    settings['georeference'][field] = '   '
+    with pytest.raises(ValueError, match='識別'):
+        prepare_edit(config, settings)
+
+
+def test_failed_abort_marker_does_not_mask_storage_error(config, tmp_path, monkeypatch):
+    async def scenario():
+        from pathlib import Path
+        from ble_inventory import server
+        path = tmp_path / 'config/site.local.json'
+        path.parent.mkdir()
+        path.write_text(json.dumps(config), encoding='utf-8')
+        initial = path.read_bytes()
+        async with TestClient(TestServer(create_app(config, tmp_path, 'external', config_path=path))) as client:
+            bootstrap = await (await client.get('/api/bootstrap')).json()
+            headers = {'X-Control-Token': bootstrap['control_token']}
+            data = await (await client.get('/api/settings', headers=headers)).json()
+            old_run = (await (await client.get('/api/state')).json())['run_id']
+            original_write = Path.write_text
+            def fail_marker(self, *args, **kwargs):
+                if self.name == 'aborted.txt': raise OSError('disk full during error cleanup')
+                return original_write(self, *args, **kwargs)
+            def fail_persist(*args): raise OSError('disk full')
+            monkeypatch.setattr(Path, 'write_text', fail_marker)
+            monkeypatch.setattr(server, 'persist_edit', fail_persist)
+            response = await client.post('/api/settings', json={'expected_revision': data['revision'], 'settings': editable(config)}, headers=headers)
+            assert response.status == 507
+            assert path.read_bytes() == initial
+            assert (await (await client.get('/api/state')).json())['run_id'] == old_run
+    asyncio.run(scenario())

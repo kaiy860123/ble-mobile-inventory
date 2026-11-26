@@ -51,14 +51,20 @@ def ready_handoff(text):
     return bool(re.search(r'^\s*(?:[-*]\s*)?(?:狀態|Status)\s*[:：]\s*`?ready_for_review`?\s*$', text, re.M | re.I))
 
 
-def session_settings(task, python, existing=None):
-    # Only this invocation: preserve higher-priority policy instead of bypassing it.
+def session_settings(task, python, existing=None, workspace=None):
+    # Editing phase only. Codex owns command execution and independent verification.
+    workspace = Path(workspace or ROOT).resolve()
+    def workspace_target(path):
+        if not allowed(path, task):
+            raise ValueError('Permission target is outside the task scope')
+        target = (workspace / path).resolve()
+        if not target.is_relative_to(workspace):
+            raise ValueError('Permission target escapes workspace')
+        return str(target)
     rules = {
-        'allow': [f'write_file({p})' for p in task['allowed_paths'] + task['allowed_prefixes']] +
-                 [f'read_file({Path(python).parent.parent})', f'command("{python}" -X utf8 -m pytest)',
-                  'command(python -m pytest)', 'command(git status)', 'command(git diff)', 'command(git rev-parse)'],
-        'deny': [f'write_file({p})' for p in ('src/', 'config/', 'infra/', '.git/')] +
-                [f'command(git {c})' for c in ('add', 'commit', 'push', 'checkout', 'reset', 'stash')]}
+        'allow': [f'write_file({workspace_target(p)})' for p in task['allowed_paths'] + task['allowed_prefixes']],
+        'deny': ['command(*)'] + [f'write_file({workspace / p})' for p in ('src', 'config', 'infra', '.git')]
+    }
     for key, values in (existing or {}).items():
         if key in ('allow', 'deny', 'ask'):
             rules[key] = list(dict.fromkeys(values + rules.get(key, [])))
@@ -148,8 +154,10 @@ def dispatch(config, task_id, resume=False):
               '只在目前 checkout 編輯下列任務範圍；不切分支、不做 git add/commit/push、reset/stash，不改 RPi/AWS/帳號設定。'
               '保留已存在的 AG-002 交付。不要讀取憑證、私密設定或非專題個人檔案。'
               f'允許檔案：{task["allowed_paths"]}；允許前綴：{task["allowed_prefixes"]}。'
-              f'可用的既有 Python 為 {python}；pytest 在目前 checkout 執行並確認 ble_inventory.__file__ 指向目前 checkout/src，避免測到另一版本。'
+              '此任務是編輯交付階段：只使用內建檔案讀取／寫入工具，命令、終端、shell、MCP 與瀏覽器工具均不使用。'
+              'Codex 已確認基準、分支與工作目錄，無須用 git 或列目錄確認。讀取已知的 docs/collaboration/tasks.md、docs/report/methods.md、scripts/evaluate-run.py 及相關檔案即可。'
               '不必安裝付費服務或使用 API key；使用既有登入。若必要操作無法完成，將未測項目與原因寫入交接。'
+              '完成程式與測試檔後，在交接明確寫「本階段測試未執行，由 Codex 接續」，不要宣稱通過。Codex 將自動執行並回歸，不需要詢問使用者。'
               + task['instruction'])
     if resume:
         prompt = '這是已查明阻塞原因後的接續工作。先讀取並保留目前未完成檔案，補足缺口，不重新 clone 或丟棄已有成果。' + prompt
@@ -158,11 +166,11 @@ def dispatch(config, task_id, resume=False):
     try:
         global_settings = Path.home() / '.gemini/antigravity-cli/settings.json'
         existing_permissions = read_json(global_settings).get('permissions', {}) if global_settings.exists() else {}
-        write_json(settings_path, session_settings(task, python, existing_permissions))
+        write_json(settings_path, session_settings(task, python, existing_permissions, workspace=repo))
         with (run_dir / 'stdout.json').open('wb') as out, (run_dir / 'stderr.log').open('wb') as err:
             proc = subprocess.run([config['cli'], '-p', prompt, '--mode', 'accept-edits', '--sandbox', '--settings', str(settings_path),
                                    '--output-format', 'json', '--print-timeout', '20m'],
-                                  cwd=repo, stdout=out, stderr=err, timeout=1250)
+                                  cwd=repo, env={**os.environ, 'PYTHONPATH': str(repo / 'src')}, stdout=out, stderr=err, timeout=1250)
         result = read_json(run_dir / 'stdout.json')
         job.update(returncode=proc.returncode, provider_status=result.get('status'))
         if proc.returncode != 0 or result.get('status') != 'SUCCESS':

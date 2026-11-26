@@ -107,6 +107,22 @@
 - 修正：跳過 None 的參考 RSSI，沿用設備／封包／全域優先序；缺少或 null 掃描器高度採場地設定。保留正常數值的行為。
 - 驗證：regression 原先 TypeError，修正後 engine 7 測試及當次完整回歸 40 測試通過，合成評估不變。
 
+## ISSUE-013 — AG-001 發現之座標設定邊界與語意
+
+- 狀態：四項均已修正；Codex 瀏覽器複驗與現場驗證仍依 TEST-017 限制追蹤。
+- F1：舊預覽在編輯／預覽失敗後殘留，改為立即清空。
+- F2：新 WGS84 原點曾自動寫 measured、既有 example 無法選擇變更；增加獨立來源欄位，新原點預設 example，保留自訂來源，避免混淆場地與原點量測狀態。
+- F3：API 純空白轉換 ID／來源曾通過；後端拒絕 strip 後空值，兩個新增測試通過。
+- F4：真正磁碟滿時錯誤清理可能蓋掉 507；close／aborted marker 改為最佳努力，新增雙重寫入失敗測試，原任務與設定保留。
+- 證據：126 個非 browser 測試通過、build 成功，原交付與 Codex 審查紀錄完整保存。
+
+## ISSUE-014 — Antigravity Windows headless 命令與 sandbox
+
+- 症狀：CLI 曾回 SUCCESS 卻沒有檔案；後續只讀探測顯示命令被拒、相對 sandbox 路徑不被接受，修正路徑後 native 終端仍卡住並 timeout。
+- 已完成：保留診斷，沒有全面跳過權限，沒有將無產出標為交付；已派工作狀態保持 blocked 可查。
+- 採用修正：session 使用任務範圍的絕對 write_file 路徑並 deny command(*)；Antigravity 以內建檔案工具開發，Codex 使用既有可用的 cmd.exe／Python 工具執行測試與整合。
+- 驗證：真實 CLI 檔案寫入探測成功；橋接器 12 案例通過。AG-003 已在保留成果與原分支的前提下接續，完整任務結果待交付。
+
 ## 新問題格式（範本）
 
 ```text
