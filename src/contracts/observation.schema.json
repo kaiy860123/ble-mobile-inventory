@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://kaiy860123.github.io/ble-mobile-inventory/observation.schema.json",
+  "title":"BLE observation batch 1.0",
+  "type":"object","additionalProperties":false,
+  "required":["schema_version","timestamp","source","scanner_id","sequence","observations"],
+  "properties":{
+    "schema_version":{"const":"1.0"},"timestamp":{"type":"number","exclusiveMinimum":0},
+    "source":{"enum":["physical","simulation"]},"scanner_id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},
+    "sequence":{"type":"integer","minimum":0},"scanner_height_m":{"type":"number"},
+    "observations":{"type":"array","maxItems":256,"items":{"type":"object","additionalProperties":false,"required":["device_id","rssi_dbm"],"properties":{"device_id":{"type":"string","pattern":"^[AT][0-9]{2,3}$"},"rssi_dbm":{"type":"number","minimum":-127,"maximum":20},"rssi_at_1m_dbm":{"type":"number","minimum":-127,"maximum":20}}}}
+  }
+}

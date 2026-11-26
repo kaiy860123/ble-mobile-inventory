@@ -1,0 +1,10 @@
+import { build } from 'esbuild';
+import { mkdir, copyFile, cp, writeFile } from 'node:fs/promises';
+await mkdir('web/dist', { recursive: true });
+await build({ entryPoints: ['web/main.js'], bundle: true, splitting: true, format: 'esm', target: ['es2022'], outdir: 'web/dist/assets', minify: true, sourcemap: false, loader: { '.png': 'file' } });
+await copyFile('web/index.html', 'web/dist/index.html');
+await copyFile('web/style.css', 'web/dist/style.css');
+await copyFile('web/overrides.css', 'web/dist/overrides.css');
+await cp('web/public', 'web/dist', { recursive: true });
+await writeFile('web/dist/.nojekyll', '');
+console.log('Built web/dist for Raspberry Pi or GitHub Pages.');

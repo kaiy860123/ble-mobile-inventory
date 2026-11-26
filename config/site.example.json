@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "site_id": "indoor-demo",
+  "label": "室內 BLE 盤點",
+  "frame_id": "room-local",
+  "bounds_m": [0, 0, 12, 9],
+  "scanner_id": "RPi01",
+  "scanner_height_m": 1.2,
+  "path_loss_exponent": 2.0,
+  "rssi_at_1m_dbm": -59.0,
+  "filter_alpha": 0.65,
+  "median_window": 3,
+  "anchor_ttl_s": 3.0,
+  "stale_after_s": 10.0,
+  "publish_interval_s": 1.0,
+  "target_window_s": 120.0,
+  "target_min_samples": 6,
+  "target_min_baseline_m": 1.5,
+  "max_residual_m": 2.5,
+  "georeference": null,
+  "devices": [
+    {"id": "A01", "role": "anchor", "position": [0, 0, 1.2]},
+    {"id": "A02", "role": "anchor", "position": [12, 0, 1.2]},
+    {"id": "A03", "role": "anchor", "position": [12, 9, 1.2]},
+    {"id": "A04", "role": "anchor", "position": [0, 9, 1.2]},
+    {"id": "T01", "role": "target", "height_m": 1.2},
+    {"id": "T02", "role": "target", "height_m": 1.2}
+  ],
+  "cloud": {"enabled": false, "endpoint": "", "region": "ap-northeast-1", "topic": "ble-inventory/indoor-demo/state", "client_id": "rpi-indoor-demo", "cert_path": "", "key_path": "", "ca_path": ""}
+}

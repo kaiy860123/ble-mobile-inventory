@@ -1,0 +1,72 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "BLE inventory: authenticated read-only viewers and one device publisher. No compute instances or cloud history.",
+  "Parameters": {
+    "SiteId": {"Type":"String","Default":"indoor-demo","AllowedPattern":"[a-z0-9-]{1,40}"},
+    "DeviceClientId": {"Type":"String","Default":"rpi-indoor-demo","AllowedPattern":"[a-zA-Z0-9_-]{1,64}"}
+  },
+  "Resources": {
+    "UserPool": {
+      "Type":"AWS::Cognito::UserPool",
+      "Properties": {
+        "UserPoolName":{"Fn::Sub":"${AWS::StackName}-viewers"},
+        "AdminCreateUserConfig":{"AllowAdminCreateUserOnly":true},
+        "UsernameAttributes":["email"],
+        "Policies":{"PasswordPolicy":{"MinimumLength":12,"RequireLowercase":true,"RequireUppercase":true,"RequireNumbers":true,"RequireSymbols":true}},
+        "UserPoolTags":{"Project":"ble-mobile-inventory"}
+      }
+    },
+    "UserPoolClient": {
+      "Type":"AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId":{"Ref":"UserPool"},"GenerateSecret":false,
+        "ExplicitAuthFlows":["ALLOW_USER_PASSWORD_AUTH","ALLOW_ADMIN_USER_PASSWORD_AUTH","ALLOW_REFRESH_TOKEN_AUTH"],
+        "PreventUserExistenceErrors":"ENABLED","AccessTokenValidity":1,"IdTokenValidity":1,"RefreshTokenValidity":1,
+        "TokenValidityUnits":{"AccessToken":"hours","IdToken":"hours","RefreshToken":"days"}
+      }
+    },
+    "IdentityPool": {
+      "Type":"AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities":false,
+        "CognitoIdentityProviders":[{"ClientId":{"Ref":"UserPoolClient"},"ProviderName":{"Fn::GetAtt":["UserPool","ProviderName"]},"ServerSideTokenCheck":true}]
+      }
+    },
+    "ViewerRole": {
+      "Type":"AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Federated":"cognito-identity.amazonaws.com"},"Action":"sts:AssumeRoleWithWebIdentity","Condition":{"StringEquals":{"cognito-identity.amazonaws.com:aud":{"Ref":"IdentityPool"}},"ForAnyValue:StringLike":{"cognito-identity.amazonaws.com:amr":"authenticated"}}}]},
+        "Policies":[{"PolicyName":"ReadOnlyBleState","PolicyDocument":{"Version":"2012-10-17","Statement":[
+          {"Effect":"Allow","Action":"iot:Connect","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:client/viewer-*"}},
+          {"Effect":"Allow","Action":"iot:Subscribe","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/ble-inventory/${SiteId}/state"}},
+          {"Effect":"Allow","Action":"iot:Receive","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/ble-inventory/${SiteId}/state"}}
+        ]}}]
+      }
+    },
+    "IdentityPoolRoleAttachment": {"Type":"AWS::Cognito::IdentityPoolRoleAttachment","Properties":{"IdentityPoolId":{"Ref":"IdentityPool"},"Roles":{"authenticated":{"Fn::GetAtt":["ViewerRole","Arn"]}}}},
+    "ViewerIoTPolicy": {
+      "Type":"AWS::IoT::Policy",
+      "Properties": {
+        "PolicyDocument":{"Version":"2012-10-17","Statement":[
+          {"Effect":"Allow","Action":"iot:Connect","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:client/viewer-*"}},
+          {"Effect":"Allow","Action":"iot:Subscribe","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/ble-inventory/${SiteId}/state"}},
+          {"Effect":"Allow","Action":"iot:Receive","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/ble-inventory/${SiteId}/state"}}
+        ]}
+      }
+    },
+    "DevicePolicy": {
+      "Type":"AWS::IoT::Policy",
+      "Properties":{"PolicyDocument":{"Version":"2012-10-17","Statement":[
+        {"Effect":"Allow","Action":"iot:Connect","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:client/${DeviceClientId}"}},
+        {"Effect":"Allow","Action":"iot:Publish","Resource":{"Fn::Sub":"arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/ble-inventory/${SiteId}/state"}}
+      ]}}
+    },
+    "ScannerThing": {"Type":"AWS::IoT::Thing","Properties":{"AttributePayload":{"Attributes":{"project":"ble-mobile-inventory","site":{"Ref":"SiteId"}}}}}
+  },
+  "Outputs": {
+    "UserPoolId":{"Value":{"Ref":"UserPool"}},"UserPoolClientId":{"Value":{"Ref":"UserPoolClient"}},
+    "IdentityPoolId":{"Value":{"Ref":"IdentityPool"}},"ViewerPolicyName":{"Value":{"Ref":"ViewerIoTPolicy"}},
+    "DevicePolicyName":{"Value":{"Ref":"DevicePolicy"}},"ThingName":{"Value":{"Ref":"ScannerThing"}},
+    "Topic":{"Value":{"Fn::Sub":"ble-inventory/${SiteId}/state"}},"ClientId":{"Value":{"Ref":"DeviceClientId"}}
+  }
+}

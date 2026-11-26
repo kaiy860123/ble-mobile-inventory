@@ -1,0 +1,8 @@
+{
+  "region": "ap-northeast-1",
+  "endpoint": "YOUR_ENDPOINT.iot.ap-northeast-1.amazonaws.com",
+  "userPoolId": "YOUR_USER_POOL_ID",
+  "userPoolClientId": "YOUR_PUBLIC_APP_CLIENT_ID",
+  "identityPoolId": "YOUR_IDENTITY_POOL_ID",
+  "topic": "ble-inventory/indoor-demo/state"
+}

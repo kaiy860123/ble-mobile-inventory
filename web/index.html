@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="BLE 移動盤點、兩階段定位與實驗回放">
+  <title>Fieldnote · BLE 移動盤點</title>
+  <link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./assets/main.css"><link rel="stylesheet" href="./overrides.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="./" aria-label="Fieldnote 首頁"><span class="brand-mark">f<span>·</span></span><span>fieldnote<small>BLE FIELD SYSTEM</small></span></a>
+    <div class="side-label">工作空間</div>
+    <a class="nav-item active" href="#overview"><span>◈</span> 盤點總覽</a>
+    <a class="nav-item" href="#devices"><span>▦</span> 設備清單</a>
+    <button class="nav-item" id="nav-replay"><span>◷</span> 實驗回放</button>
+    <div class="sidebar-bottom"><span class="small-tag">COMME5047</span><p>移動觀測，還原位置。</p><small>物聯網導論 · 2026</small></div>
+  </aside>
+  <div class="workspace" id="overview">
+    <header class="topbar"><div><span class="breadcrumb">工作空間</span><span class="slash">/</span><strong>盤點總覽</strong></div><div class="topbar-right"><span class="connection" id="connection">尚未連線</span><span class="avatar">BLE</span></div></header>
+    <main>
+      <section class="page-heading"><div><div class="eyebrow">FIELD INVENTORY</div><h1>移動盤點與定位</h1><p>從移動觀測，掌握每個目標的最後有效位置。</p></div><div class="heading-actions"><button class="button secondary" id="import-button">匯入紀錄</button><button class="button primary" id="cloud-button">登入即時資料</button><input id="replay-file" type="file" accept=".json,application/json" hidden></div></section>
+      <div id="notice" class="notice" role="status">正在讀取資料來源…</div>
+      <section class="source-bar"><div class="source-control"><label for="source-select">資料來源</label><select id="source-select"><option value="replay">實驗回放</option><option value="local">本地即時</option><option value="cloud">AWS 即時</option></select><span id="source-badge" class="tag">等待資料</span></div><div class="task-controls"><span id="task-status">尚無任務</span><button class="button small" id="start-task" disabled>開始新巡查</button><button class="button small" id="stop-task" disabled>結束巡查</button></div></section>
+      <section class="metrics" aria-label="盤點摘要">
+        <article class="metric"><span class="metric-label">本次已盤點 <span class="metric-symbol">▦</span></span><div><strong id="count-total">—</strong><span class="metric-unit">個 Target</span></div><p id="count-total-note">依設備 ID 去重計算</p></article>
+        <article class="metric"><span class="metric-label">目前可見 <span class="metric-symbol green">◉</span></span><div><strong id="count-visible">—</strong><span class="metric-unit">個 Target</span></div><p>超過 10 秒未收到時保留最後紀錄</p></article>
+        <article class="metric"><span class="metric-label">已取得定位 <span class="metric-symbol amber">⌖</span></span><div><strong id="count-located">—</strong><span class="metric-unit">個 Target</span></div><p id="quality-note">等待足夠的移動觀測</p></article>
+      </section>
+      <section class="main-grid">
+        <article class="panel map-panel"><div class="panel-heading"><div><h2>場域位置</h2><p id="frame-label">Local · 公尺</p></div><div class="segmented" aria-label="地圖顯示"><button id="grid-button" class="selected">Local 網格</button><button id="geo-button">WGS84 底圖</button></div></div><div id="map-container"><svg id="local-map" viewBox="0 0 800 450" role="img" aria-label="設備平面位置圖"></svg><div id="geo-map" hidden></div><div class="map-overlay"><label><input id="trail-toggle" type="checkbox" checked> 顯示航跡</label><button id="fit-map" title="重設地圖範圍">重設視野</button></div></div><div class="map-footer"><div class="legend"><span><i class="anchor-marker"></i> Anchor</span><span><i class="scanner-marker"></i> RPi 掃描器</span><span><i class="target-marker"></i> Target</span><span><i class="stale-marker"></i> 最後有效位置</span></div><span id="coordinate-status">尚未地理對準</span></div></article>
+        <aside class="panel detail-panel"><div class="panel-heading"><div><h2>設備詳情</h2><p>選擇地圖或清單中的設備</p></div><span class="detail-icon">⌖</span></div><div id="device-detail" class="device-detail"><div class="empty-detail">尚無設備資料</div></div><div class="detail-footnote">位置為 BLE 估計結果；已知 Anchor 座標另行標示。</div></aside>
+      </section>
+      <section class="panel replay-panel" id="replay-panel"><div class="replay-heading"><div><h2>實驗回放</h2><p id="replay-description">載入紀錄以重現觀測結果</p></div><div class="replay-actions"><button class="button small" id="load-demo">載入示範</button><label for="playback-speed">速度</label><select id="playback-speed"><option value="1">1×</option><option value="2">2×</option><option value="5">5×</option></select><button class="button primary small" id="play-button">播放</button></div></div><div class="timeline"><span id="replay-time">00:00</span><input type="range" id="replay-slider" min="0" max="0" value="0" aria-label="回放時間"><span id="replay-duration">00:00</span></div></section>
+      <section class="panel device-panel" id="devices"><div class="panel-heading"><div><h2>設備清單 <span id="device-count" class="count-chip">0</span></h2><p>接收狀態、定位品質與最後有效座標</p></div><div><button class="button small" id="export-csv">匯出 CSV</button><button class="button small" id="export-json">匯出回放</button></div></div><div class="table-scroll"><table><thead><tr><th>設備</th><th>角色</th><th>接收狀態</th><th>RSSI</th><th>Local 位置（m）</th><th>定位品質</th><th>最後接收</th></tr></thead><tbody id="device-rows"></tbody></table></div></section>
+      <footer class="page-footer"><span id="run-label">尚無實驗紀錄</span><span>估計位置與真值分開記錄</span></footer>
+    </main>
+  </div>
+</div>
+<dialog id="login-dialog"><form id="login-form"><div class="eyebrow">LIVE ACCESS</div><h2>登入即時資料</h2><p>使用專題管理者建立的觀看帳號。</p><label>帳號<input id="username" autocomplete="username" required></label><label>密碼<input id="password" type="password" autocomplete="current-password" required></label><label id="new-password-label" hidden>設定新密碼<input id="new-password" type="password" autocomplete="new-password"></label><p id="login-error" role="alert"></p><div class="dialog-actions"><button class="button secondary" type="button" id="cancel-login">取消</button><button class="button primary" id="login-submit" type="submit">登入</button></div></form></dialog>
+<script type="module" src="./assets/main.js"></script>
+</body></html>

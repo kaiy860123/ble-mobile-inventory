@@ -1,0 +1,6 @@
+.source-control,.task-controls{font-size:14px}
+.device-detail .detail-list div{font-size:14px}
+table{font-size:14px}th{font-size:13px}
+.status{font-size:12px}.segmented button{font-size:13px}.button.small{font-size:13px}
+#local-map{touch-action:none}
+@media(max-width:760px){.detail-panel{display:block}.device-detail{min-height:auto}.detail-panel .detail-footnote{font-size:12px}.device-detail .detail-list div{font-size:14px}.button.small{font-size:12px}}

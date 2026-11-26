@@ -1,0 +1,48 @@
+# Secrets and private machine configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+.aws/
+secrets/
+config/private/
+config/*.local.*
+
+# Local runtime and build products
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+dist/
+build/
+
+# Experiment outputs are local by default; curated fixtures can live in tests/
+data/raw/*
+!data/raw/README.md
+data/processed/*
+!data/processed/README.md
+data/replays/*
+!data/replays/README.md
+artifacts/*
+!artifacts/README.md
+deliverables/*
+!deliverables/README.md
+
+# Office temporary files
+~$*
+
+# Build caches and original course/reference attachments stay local
+.pio/
+.platformio/
+*.egg-info/
+*.pptx
+*.pdf
+*.png
+專題構想.txt
