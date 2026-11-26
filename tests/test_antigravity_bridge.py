@@ -79,3 +79,13 @@ def test_dependencies_and_dirty_workspace_block_dispatch(tmp_path, monkeypatch):
     monkeypatch.setattr(bridge, 'changed_paths', lambda *args: ['existing-work.py'])
     with pytest.raises(ValueError, match='uncommitted'):
         bridge.dispatch({'checkout': str(tmp_path)}, 'AG-001')
+
+
+def test_resume_requires_blocked_state_and_is_bounded(tmp_path, monkeypatch):
+    monkeypatch.setattr(bridge, 'check_repo', lambda *args: None)
+    monkeypatch.setattr(bridge, 'state', lambda: {'jobs': {}, 'accepted': {}})
+    with pytest.raises(ValueError, match='blocked'):
+        bridge.dispatch({'checkout': str(tmp_path)}, 'AG-001', resume=True)
+    monkeypatch.setattr(bridge, 'state', lambda: {'jobs': {'AG-001': {'status': 'blocked', 'attempt': 3}}, 'accepted': {}})
+    with pytest.raises(ValueError, match='Three attempts'):
+        bridge.dispatch({'checkout': str(tmp_path)}, 'AG-001', resume=True)

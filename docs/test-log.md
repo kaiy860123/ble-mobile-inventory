@@ -127,14 +127,14 @@
 - 官方安裝：查閱安裝腳本，使用其 SHA-512 驗證，安裝 agy 1.5.18；實際 --help 支援 print、JSON、timeout、sandbox 與 session settings。
 - 最小無讀寫 probe：既有登入回傳 returncode=0、status=SUCCESS、response=BLE_BRIDGE_READY。
 - 已實際辨識外部 checkout 的乾淨 AG-002 分支，fetch 至專用 ref；AG-001 已由腳本建立分支並啟動官方 CLI，未要求人工貼 prompt 或推送。
-- 橋接器：最新 9 測試通過，涵蓋 ready 狀態、檔案白名單、指定儲存庫、重複派工、依賴／dirty workspace、session 權限範圍，以及驗收 receipt 不被舊 worker 狀態覆蓋。
+- 橋接器：最新 10 測試通過，涵蓋 ready 狀態、檔案白名單、指定儲存庫、重複派工、依賴／dirty workspace、session 權限範圍，以及驗收 receipt 不被舊 worker 狀態覆蓋。
 - 限制：第一次真實工作仍需以其 handoff、diff 與獨立測試確認結果；CLI SUCCESS 不等於測試通過。帳號不支援 auto，首輪回落 default；後續採 session 範圍的測試命令與 accept-edits，保留原政策，不全面跳過權限。
 
 ## TEST-016 — AG-002 獨立審查與 null regression
 
 - 完整交付 SHA：28d61d6dd4e82002d53e17a4119c54aba061c679；六份文件逐檔核對範圍、協定、流程與部署狀態，報告見 docs/reviews/2026-11-26-AG-002-codex.md。
 - 先新增 regression 重現 null 參考 RSSI 造成的 TypeError；修正 RSSI／scanner_height_m 的可選 null fallback，engine 7 測試通過。
-- 當次完整 Python 回歸 40 passed in 1.90s；後續增加 receipt 競爭案例，橋接器目標測試 9 passed。
+- 當次完整 Python 回歸 40 passed in 1.90s；後續增加 receipt 競爭案例，橋接器目標測試 10 passed。
 - 重跑合成評估數值一致，Markdown 本地連結失效 0；未渲染 Mermaid，不宣稱版面驗收。
 
 ## 新測試格式（範本）

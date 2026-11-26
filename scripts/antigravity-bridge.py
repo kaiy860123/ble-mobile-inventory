@@ -70,6 +70,9 @@ def state():
     for path in (RUNTIME / 'accepted').glob('AG-*.json'):
         receipt = read_json(path)
         saved['accepted'][receipt['task_id']] = receipt['sha']
+        job = saved['jobs'].get(receipt['task_id'])
+        if job and job['status'] != 'running' and receipt.get('accepted_at', 0) >= job.get('started_at', 0):
+            job['status'] = 'accepted'
     return saved
 
 
@@ -99,29 +102,44 @@ def status(config):
             'dirty': changed_paths(repo), 'jobs': saved['jobs'], 'pending_deliveries': pending}
 
 
-def dispatch(config, task_id):
+def dispatch(config, task_id, resume=False):
     if task_id not in ('AG-001', 'AG-003'):
         raise ValueError('Task is not in the explicit dispatch queue')
     repo = Path(config['checkout'])
     check_repo(repo)
     task = read_json(ROOT / f'docs/collaboration/queue/{task_id}.json')
     saved = state()
-    if task_id in saved['jobs']:
+    previous = saved['jobs'].get(task_id)
+    if previous and not resume:
         raise ValueError('Task already dispatched; inspect its result instead of launching a duplicate')
+    if resume and (not previous or previous['status'] != 'blocked'):
+        raise ValueError('Only a blocked, stopped task can be resumed')
+    if resume and previous.get('attempt', 1) >= 3:
+        raise ValueError('Three attempts reached; review the failure before defining new work')
     if any(j['status'] == 'running' for j in saved['jobs'].values()):
         raise ValueError('Another bridge task is running')
     if any(d not in saved['accepted'] for d in task['depends_on']):
         raise ValueError('Required Codex reviews have not been accepted')
-    if changed_paths(repo):
-        raise ValueError('Worker checkout has uncommitted changes; preserve them and wait')
-    if git(repo, 'branch', '--list', task['branch']):
-        raise ValueError('Task branch already exists; inspect it before retrying')
-    base = git(repo, 'rev-parse', 'HEAD')
-    git(repo, 'checkout', '-b', task['branch'])
+    dirty = changed_paths(repo)
+    if resume:
+        base = previous['base_sha']
+        if git(repo, 'branch', '--show-current') != task['branch'] or git(repo, 'rev-parse', 'HEAD') != base:
+            raise ValueError('Resume branch or HEAD changed; inspect manually without discarding work')
+        if any(not allowed(p, task) for p in dirty):
+            raise ValueError('Resume contains out-of-scope changes; preserve for Codex review')
+    else:
+        if dirty:
+            raise ValueError('Worker checkout has uncommitted changes; preserve them and wait')
+        if git(repo, 'branch', '--list', task['branch']):
+            raise ValueError('Task branch already exists; inspect it before retrying')
+        base = git(repo, 'rev-parse', 'HEAD')
+        git(repo, 'checkout', '-b', task['branch'])
     run_dir = RUNTIME / (task_id + '-' + uuid.uuid4().hex[:10])
     run_dir.mkdir(parents=True)
     job = {'status': 'running', 'base_sha': base, 'branch': task['branch'], 'started_at': time.time(),
-           'runner_pid': os.getpid(), 'run_dir': str(run_dir)}
+           'runner_pid': os.getpid(), 'run_dir': str(run_dir), 'attempt': previous.get('attempt', 1) + 1 if previous else 1}
+    if previous:
+        saved.setdefault('history', []).append({'task_id': task_id, **previous})
     saved['jobs'][task_id] = job
     write_json(STATE, saved)
     python = str(ROOT / '.venv/Scripts/python.exe')
@@ -133,6 +151,8 @@ def dispatch(config, task_id):
               f'可用的既有 Python 為 {python}；pytest 在目前 checkout 執行並確認 ble_inventory.__file__ 指向目前 checkout/src，避免測到另一版本。'
               '不必安裝付費服務或使用 API key；使用既有登入。若必要操作無法完成，將未測項目與原因寫入交接。'
               + task['instruction'])
+    if resume:
+        prompt = '這是已查明阻塞原因後的接續工作。先讀取並保留目前未完成檔案，補足缺口，不重新 clone 或丟棄已有成果。' + prompt
     (run_dir / 'prompt.txt').write_text(prompt, encoding='utf-8')
     settings_path = run_dir / 'session-settings.json'
     try:
@@ -169,7 +189,7 @@ def dispatch(config, task_id):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['status', 'run', 'import', 'accept'])
+    parser.add_argument('action', choices=['status', 'run', 'resume', 'import', 'accept'])
     parser.add_argument('task', nargs='?')
     parser.add_argument('--sha')
     parser.add_argument('--review-file', type=Path)
@@ -179,12 +199,12 @@ def main():
         RUNTIME.mkdir(parents=True, exist_ok=True)
         if args.action == 'status':
             result = status(config)
-        elif args.action == 'run':
+        elif args.action in ('run', 'resume'):
             lock = RUNTIME / 'dispatch.lock'
             fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
             try:
                 os.close(fd)
-                result = dispatch(config, args.task)
+                result = dispatch(config, args.task, resume=args.action == 'resume')
             finally:
                 lock.unlink()
         else:

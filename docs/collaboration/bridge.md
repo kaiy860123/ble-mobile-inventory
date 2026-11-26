@@ -29,6 +29,7 @@ Google 官方 CLI `agy` 已安裝，版本 1.5.18；以既有登入執行無讀�
 - 現有帳號不支援 CLI `auto` 模式，實際首次工作已自動回落至 default。後續依真實檔案／測試檢查；若工具在 headless 被拒絕，記錄未執行，不以回傳碼 0 冒充完成。使用 session 範圍的具體測試指令授權處理可自動化部分，保留原有更高優先限制；不啟用全域 Turbo 或 dangerously-skip-permissions。
 - 不讀取／複製憑證來串接；沿用官方 keyring 登入。若 session 過期，可能仍需使用者完成一次官方登入，登入後循環可繼續；正常任務交接不需貼訊息。
 - CLI timeout 為 20 分鐘，外層另設上限。失敗保留檔案與 blocked 原因；不自動清理工作樹、不無限重試。先查明原因並審查現有輸出，再修正派工設定。
+- 查明並修正阻塞後，可用 `resume TASK` 保留允許範圍的未提交成果，確認原分支／HEAD 不變再接續；只接受已停止的 blocked 工作，每任務最多三次嘗試。已有提交或越界內容時先由 Codex 審查，不自動丟棄。
 - 若 runner 異常退出而鎖仍在，先確認該 PID／程序已結束，再恢復；不僅因檔案時間久就移除鎖。
 - 本機持續執行仍受電腦與 Codex 排程環境可用性影響，沒有宣稱外部雲端常駐。
 
@@ -37,6 +38,7 @@ Google 官方 CLI `agy` 已安裝，版本 1.5.18；以既有登入執行無讀�
 ```text
 python scripts/antigravity-bridge.py status
 python scripts/antigravity-bridge.py run AG-001
+python scripts/antigravity-bridge.py resume AG-001
 python scripts/antigravity-bridge.py import AG-002 --sha <完整交付 SHA>
 python scripts/antigravity-bridge.py accept AG-002 --sha <完整交付 SHA> --review-file docs/reviews/<審查文件>.md
 ```
