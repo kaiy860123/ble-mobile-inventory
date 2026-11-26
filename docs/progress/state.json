@@ -110,10 +110,10 @@
       "id": "AG-003",
       "title": "實驗彙整工具開發",
       "owner": "Antigravity CLI＋Codex 審查",
-      "status": "in_progress",
-      "scope": "依兩項 accept 已自動派送",
-      "evidence": "bridge 已建立 AG-003 任務分支並呼叫官方 CLI；結果尚待交付",
-      "next": "產生工具、手算測試及 ready handoff，Codex 自動審查；缺資料不補造"
+      "status": "verified",
+      "scope": "離線彙整工具／合成與手算；無新實測",
+      "evidence": "febfb3e 自動交付；Codex 修正三項發現，21 個彙整測試及 149 個非 browser 回歸通過",
+      "next": "等待實體／Gazebo／AWS 資料，分任務填寫 manifest 與預定分母"
     },
     {
       "id": "CDX-REPORT",

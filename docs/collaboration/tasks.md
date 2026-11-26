@@ -41,7 +41,7 @@
 
 ## AG-003 — 實驗彙整工具開發（AG-001／AG-002 後）
 
-- 負責：Antigravity 開發，Codex 審查；狀態：AG-001／AG-002 均 accept，已由 bridge 自動派工，實際結果待交付／審查。
+- 負責：Antigravity 開發，Codex 審查；狀態：AG-001／AG-002 均 accept，已自動交付 febfb3e；Codex 修正三項發現後 21 個彙整／149 個非 browser 測試通過，接受範圍為離線工具，無新實測。
 - 可新增：`scripts/summarize-experiments.py`、`tests/test_experiment_summary.py`、`docs/report/experiments-template.csv`、`docs/handoffs/AG-003-result.md`。既有定位核心、評估腳本與原始資料維持只讀。
 - 輸入：既有評估 JSON，加上明確填寫的實驗 metadata（來源、場地、版本、run_id、應評估時點／應盤點集合、缺測原因）。
 - 輸出：可比較的實驗表，列有效樣本、MAE／RMSE／P50／P95、定位成功率、盤點召回率及限制；若沒有分母／應盤點集合，輸出未提供，不猜測。

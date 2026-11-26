@@ -180,3 +180,10 @@ TEST-NNN — 測試名稱
 - browser 測試未在本機執行；CLI 任務 AG-003 第三次以僅檔案工具模式執行中，尚無交付，不能列為通過。
 
 - GitHub Actions 45855333250：verify-build 與 publish 均 success；遠端 pytest、npm test、build、封裝及 Pages 部署步驟通過。此處未取得 pytest 細項輸出，不額外宣稱 browser 案例數。
+
+## TEST-020：AG-003 Codex 獨立驗證（2026-11-26）
+
+- 原始交付 17 passed in 0.28s；四個 Codex regression 先 4 failed／17 passed，修正後 21 passed in 0.20s。
+- 完整命令：`.venv/Scripts/python.exe -X utf8 -m pytest -q --ignore=tests/browser`，149 passed in 2.31s。
+- CLI 範本、合成狀態／獨立真值實跑成功；有效樣本 90/85/65，RMSE 重現 1.106/0.802/0.349 m。沒有新實機資料。
+- 完整 SHA、修正與版本欄位限制見 docs/reviews/2026-11-26-AG-003-codex.md。
