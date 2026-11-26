@@ -21,6 +21,7 @@
     <main>
       <section class="page-heading"><div><div class="eyebrow">FIELD INVENTORY</div><h1>移動盤點與定位</h1><p>從移動觀測，掌握每個目標的最後有效位置。</p></div><div class="heading-actions"><button class="button secondary" id="import-button">匯入紀錄</button><button class="button primary" id="cloud-button">登入即時資料</button><input id="replay-file" type="file" accept=".json,application/json" hidden></div></section>
       <div id="notice" class="notice" role="status">正在讀取資料來源…</div>
+      <div class="heading-actions"><button class="button secondary" id="settings-button" disabled>場地／Anchor 座標設定</button></div>
       <section class="source-bar"><div class="source-control"><label for="source-select">資料來源</label><select id="source-select"><option value="replay">實驗回放</option><option value="local">本地即時</option><option value="cloud">AWS 即時</option></select><span id="source-badge" class="tag">等待資料</span></div><div class="task-controls"><span id="task-status">尚無任務</span><button class="button small" id="start-task" disabled>開始新巡查</button><button class="button small" id="stop-task" disabled>結束巡查</button></div></section>
       <section class="metrics" aria-label="盤點摘要">
         <article class="metric"><span class="metric-label">本次已盤點 <span class="metric-symbol">▦</span></span><div><strong id="count-total">—</strong><span class="metric-unit">個 Target</span></div><p id="count-total-note">依設備 ID 去重計算</p></article>

@@ -83,7 +83,15 @@
 - 工程改進：下載腳本列出 Linux 依賴，避免跨平台 pip 使用 Windows host marker 而誤選 WinRT；一般線上安裝增加 timeout／retries。
 - 驗證：ARM64 wheelhouse 傳輸 checksum 相符、離線安裝完成、pip check 無相依性問題、服務與 HTTP API 啟動成功。
 
-## 新問題格式
+## ISSUE-010 — 沙箱 socket 與本次 RPi 更新
+
+- 日期：2026-11-26；狀態：本機測試已解決，RPi 部署待網路恢復。
+- 本機：一般沙箱 socket 連線回 10013，asyncio socketpair 初始化無法完成。以 faulthandler 確認卡在 socket.accept，停止等待，在授權的本機 socket 環境重跑，27 測試通過。
+- Shell：本次 `cmd.exe` 搭配明確 UTF-8 可正常讀寫與建置，無須等待未輸出的 PowerShell 啟動。
+- RPi：部署器在 SSH connect 逾時，未進入 SFTP；與先前已成功部署的版本區分。尚未確認是 RPi 關機、IP 更換或網路隔離，不將推測當根因。
+- 後續：RPi 重新可達後部署已打包新版並驗證實際網頁，見 TEST-012。
+
+## 新問題格式（範本）
 
 ```text
 ISSUE-NNN — 標題

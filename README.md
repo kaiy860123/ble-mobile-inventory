@@ -34,6 +34,13 @@ Windows 需 Python 3.11+ 與 Node.js 20+：
 
 ## 已知時程
 
+新增工作入口：
+
+- [場地／Anchor 座標介面](docs/design/site-settings.md)：RPi 本地網頁編輯，先預覽再保存；改座標不需重刷 XIAO。
+- [專題報告草稿](docs/report/report-draft.md)與[計算公式](docs/report/methods.md)：四種架構圖、定位與座標轉換、實驗與限制。
+- [共同開發規劃](docs/collaboration/README.md)與[Antigravity 啟動指令](docs/collaboration/antigravity-start.md)。
+- [進度資料](docs/progress/state.json)：執行 `python scripts/render-progress.py` 更新 Codex 進度快照。
+
 - 展示／繳交日：2026-12-24（依本次對話年份解讀 12/24）。
 - 主要功能完成目標：2026-12-10。
 - 雙方整合完成目標：2026-12-17；可提前。

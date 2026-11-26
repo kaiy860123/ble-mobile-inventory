@@ -4,3 +4,14 @@ table{font-size:14px}th{font-size:13px}
 .status{font-size:12px}.segmented button{font-size:13px}.button.small{font-size:13px}
 #local-map{touch-action:none}
 @media(max-width:760px){.detail-panel{display:block}.device-detail{min-height:auto}.detail-panel .detail-footnote{font-size:12px}.device-detail .detail-list div{font-size:14px}.button.small{font-size:12px}}
+/* Local coordinate editor */
+#settings-dialog{width:min(850px,94vw);max-width:94vw;max-height:90vh;overflow:auto}
+#settings-dialog form{display:grid;gap:16px}
+#settings-dialog .site-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+#settings-dialog label{display:grid;gap:5px;min-width:0}
+#settings-dialog input,#settings-dialog select{width:100%;box-sizing:border-box;min-width:0}
+#settings-dialog [hidden]{display:none!important}
+#settings-dialog fieldset{border:1px solid #d9dfd9;border-radius:8px;padding:12px;margin:0 0 12px}
+#site-preview{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}
+#site-error{color:#a62c2c}
+#settings-dialog .dialog-actions{flex-wrap:wrap}

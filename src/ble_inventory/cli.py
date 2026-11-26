@@ -21,7 +21,7 @@ def main():
         config = load_config(args.config)
         if args.mode == "external" and not os.environ.get("BLE_INGEST_TOKEN"):
             parser.error("external mode requires BLE_INGEST_TOKEN in the environment")
-        app = create_app(config, Path(args.root), args.mode, os.environ.get("BLE_INGEST_TOKEN"))
+        app = create_app(config, Path(args.root), args.mode, os.environ.get("BLE_INGEST_TOKEN"), config_path=args.config)
         print(f"Input mode: {args.mode}; demo is synthetic data, not Gazebo or hardware validation.")
         web.run_app(app, host=args.host, port=args.port)
 

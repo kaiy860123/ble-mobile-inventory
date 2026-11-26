@@ -1,0 +1,40 @@
+<div id="ble-project-progress">
+  <style>
+    #ble-project-progress{display:grid;gap:calc(var(--font-size-base)*1);color:var(--foreground)}
+    #ble-project-progress .milestones{display:flex;flex-wrap:wrap;gap:calc(var(--font-size-base)*1.5)}
+    #ble-project-progress .detail-content{display:grid;gap:calc(var(--font-size-base)*.5);overflow-wrap:anywhere}
+    #ble-project-progress .status-mark{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:var(--viz-series-1);margin-right:.5em}
+    #ble-project-progress .status-mark[data-status="in_progress"]{background:var(--viz-series-2)}
+    #ble-project-progress .status-mark[data-status="blocked"]{background:var(--viz-series-3)}
+    #ble-project-progress .status-mark[data-status="todo"]{background:var(--muted-foreground)}
+  </style>
+  <h2>BLE 專題進度</h2>
+  <div class="text-small text-muted" data-snapshot></div>
+  <div class="milestones" data-milestones></div>
+  <div class="table-responsive"><table class="table table-sm"><thead><tr><th>工作項目</th><th>負責</th><th>狀態</th></tr></thead><tbody data-tasks></tbody></table></div>
+  <div class="card"><div class="detail-content" aria-live="polite"><h3 data-title></h3><span data-scope></span><span data-evidence></span><span data-next></span></div></div>
+  <script type="application/json" id="ble-progress-data">__PROGRESS_DATA__</script>
+  <script>
+    (()=>{
+      const root=document.getElementById('ble-project-progress');
+      const data=JSON.parse(document.getElementById('ble-progress-data').textContent);
+      const names={verified:'已驗證（限定範圍）',in_progress:'進行中',blocked:'等待條件',todo:'待接手'};
+      const find=s=>root.querySelector(s);const buttons=new Map();
+      find('[data-snapshot]').textContent=`狀態快照：${data.updated_at} · 點選工作查看證據與下一步`;
+      for(const m of data.milestones){const el=document.createElement('span');el.textContent=`${m.date.slice(5).replace('-','/')} ${m.label}`;find('[data-milestones]').append(el);}
+      let selected;
+      function choose(id,save=false){const task=data.tasks.find(t=>t.id===id)??data.tasks[0];selected=task.id;
+        for(const [key,b]of buttons)b.setAttribute('aria-pressed',String(key===selected));
+        find('[data-title]').textContent=`${task.id} · ${task.title}`;find('[data-scope]').textContent=`範圍：${task.scope}`;
+        find('[data-evidence]').textContent=`證據：${task.evidence}`;find('[data-next]').textContent=`下一步：${task.next}`;
+        if(save&&window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{selectedTask:task.id},privateContent:null}).catch(()=>{});
+      }
+      for(const task of data.tasks){const tr=document.createElement('tr'),name=document.createElement('td'),owner=document.createElement('td'),status=document.createElement('td'),b=document.createElement('button');
+        b.type='button';b.className='btn btn-ghost';b.textContent=task.title;b.addEventListener('click',()=>choose(task.id,true));buttons.set(task.id,b);name.append(b);owner.textContent=task.owner;
+        const mark=document.createElement('span');mark.className='status-mark';mark.dataset.status=task.status;mark.setAttribute('aria-hidden','true');status.append(mark,document.createTextNode(names[task.status]));tr.append(name,owner,status);find('[data-tasks]').append(tr);
+      }
+      choose(window.openai?.widgetState?.modelContent?.selectedTask??'CDX-SETTINGS');
+      window.addEventListener('openai:set_globals',e=>{const id=e.detail?.globals?.widgetState?.modelContent?.selectedTask;if(id)choose(id);});
+    })();
+  </script>
+</div>

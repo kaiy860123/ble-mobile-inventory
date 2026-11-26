@@ -136,4 +136,7 @@ $('login-form').onsubmit=async event=>{
 setInterval(()=>{if((mode==='local'||mode==='cloud')&&lastReceived&&Date.now()-lastReceived>10000){connection('即時資料中斷');notice('超過 10 秒未收到新資料；目前顯示最後收到的狀態。',true);}},1000);
 window.addEventListener('resize',renderMap);
 async function init(){try{const response=await fetch('./cloud-config.json',{cache:'no-store'});if(response.ok){const value=await response.json();if(value.endpoint&&value.userPoolId&&value.identityPoolId&&value.userPoolClientId)cloudConfig=value;}}catch{/* Cloud optional until deployment. */}try{await connectLocal();}catch{try{await loadDemo();}catch(error){notice(error.message,true);}}}
+import {initSiteSettings} from './site-settings.js';
+const siteSettings=initSiteSettings(()=>({mode,bootstrap}),onFrame,notice);
+setInterval(()=>siteSettings.updateAvailability(),500);
 init();

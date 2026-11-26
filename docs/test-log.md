@@ -86,7 +86,26 @@
 - 證據：本地 `artifacts/deployment/rpi-verification.json`、`artifacts/ui/rpi-physical-dashboard.jpg`，不提交主機資訊或截圖到公開庫。
 - 限制：尚無專題 Tag 廣播，目前 Target 數 0；場地座標與校正仍為範例。這不是兩階段 BLE 實機精度驗收，也尚未串接 AWS。
 
-## 新測試格式
+## TEST-011 — 座標設定交易與回歸
+
+- 日期：2026-11-26；Windows／Python 3.12.14。
+- 命令：`.venv/Scripts/python.exe -X utf8 -m pytest -q`、`npm test`、`npm run build`。
+- 結果：27 Python 測試、2 前端資料測試通過，正式網頁建置成功。
+- 新增覆蓋：WGS84 37° 旋轉往返、私密 cloud 欄位保留、NaN／範圍／共線／ID／Target 真值欄位拒絕、設定 API token／Origin、預覽不改檔／任務、磁碟失敗 507 保留原設定、正常保存／備份／新任務／舊 manifest、revision 衝突 409。
+- 初次失敗：新增模組括號不配對，已修正後重跑完整測試。
+- 環境限制：一般沙箱 Windows socket 回傳 10013，asyncio 建立 socketpair 時等待；停止該次測試，在允許本機 socket 的執行環境重跑，27 passed in 1.83s。此為執行環境限制，非 API 程式死鎖。
+- 限制：未由此推論 BLE／Gazebo／AWS 實機整合通過。
+
+## TEST-012 — 新版座標表單與部署嘗試
+
+- 本機瀏覽器：127.0.0.1:8091，合成 demo；開啟座標表單、確認 Local／高度／地理參考欄位、計算預覽，再以原有示例值保存。
+- 結果：預覽顯示四 Anchor 的 Local 座標與尚未實測警示；保存後顯示成功，run_id 改變、Target 計數重設；console error／warn 為空。
+- 測試未將示例標成已量測；範例設定內容未變，僅保存格式變化已恢復原格式。
+- 打包成功：80 檔案，未包含裝置私鑰或實驗資料。
+- RPi 部署：SSH 連接逾時，尚未傳檔、未重啟，故 RPi 新版尚未部署；不能當作 RPi 新功能驗收。
+- 限制：手機、跨頁衝突 UI、鍵盤完整走訪待 AG-001 獨立檢查；API 衝突／失敗已有 TEST-011。
+
+## 新測試格式（範本）
 
 ```text
 TEST-NNN — 測試名稱

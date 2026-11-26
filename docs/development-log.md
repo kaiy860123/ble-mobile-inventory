@@ -62,7 +62,17 @@
 - 狀態：實體 BLE 掃描開啟但尚無專題 Tag，不能當作定位精度完成；AWS 仍待部署。
 - 韌體：本機 A01 與 CI 六種角色編譯均成功，未刷機。
 
-## 新紀錄格式
+## DEV-008 — 座標介面、報告方法與共同開發
+
+- 日期：2026-11-26；對應 R25–R28。
+- 實作：白名單座標設定、Local／WGS84 含旋轉預覽、revision 衝突、備份與原子保存；成功後新巡查隔離舊資料，cloud 等私密配置保留。
+- 驗證：TEST-011、TEST-012；本機 27 Python／2 前端測試通過，瀏覽器保存通過；RPi 更新因 SSH 逾時尚未傳檔。
+- 報告：新增四種架構圖、計算方法／公式／單位／程式對照與實驗草稿；合成結果明確標示，不補造實測。
+- 協作：AGENTS.md 入口、Codex／Antigravity／Gazebo 角色、分支及檔案範圍、驗收矩陣、交接模板與可貼用啟動指令；Antigravity 尚未啟動。
+- 進度：以 state.json 保存證據，render-progress.py 產生可在 Codex 選取查看的進度快照；開源工具評估見 collaboration/skills-research.md。
+- 剩餘：RPi 新版部署、實體刷機與校正、Gazebo 交付、AWS 登入後整合及最終報告實驗章。
+
+## 新紀錄格式（範本）
 
 ```text
 DEV-NNN — 標題

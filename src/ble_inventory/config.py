@@ -6,7 +6,11 @@ from pathlib import Path
 
 
 def load_config(path):
-    config = json.loads(Path(path).read_text(encoding="utf-8"))
+    return normalize_config(json.loads(Path(path).read_text(encoding="utf-8")))
+
+
+def normalize_config(config):
+    config = copy.deepcopy(config)
     if config.get("georeference"):
         from .coordinates import GeoReference
         reference = GeoReference(**config["georeference"])
