@@ -2,6 +2,14 @@
 
 以下是可交接的任務規劃，不代表另一工具已開始執行。
 
+## CDX-AUTO-REVIEW — Antigravity 變更後自動審查
+
+- 使用者指定：兩工具使用同一專題資料夾。
+- 狀態：已建立本聊天 ACTIVE heartbeat（`ble-antigravity`），每 5 分鐘檢查；指紋穩定後自動審查與測試，規則見 `auto-review.md`。
+- 偵測：已追蹤檔案與未忽略新檔；新增／修改／刪除、未提交變更皆涵蓋。共用 checkout 依內容而非作者推測判斷。
+- 寫檔：開發中唯讀審查，交接最後標記 ready_for_review 後再修正與整合。審查途中變更保留新版待審。
+- 證據：TEST-014；排程工具回傳建立 ACTIVE、view 可檢視；實際後續排程觸發仍須依第一筆執行紀錄確認。
+
 ## CDX-SETTINGS — 本地座標設定介面
 
 - 負責：Codex。

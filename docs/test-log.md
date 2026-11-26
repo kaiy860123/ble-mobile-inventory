@@ -115,6 +115,13 @@
 - 預覽環境修正：直接以無 charset 的一般 HTTP 預覽會誤判中文字元；改用 UTF-8 預覽包裝後互動正常。Codex fragment 本身維持原始 UTF-8，不加入完整網頁外殼。
 - 限制：預覽驗證不等同已取得 Antigravity 的測試結果；RPi 新版／AWS／實機定位仍未完成。
 
+## TEST-014 — 自動審查變更偵測
+
+- 日期：2026-11-26；命令：`.venv/Scripts/python.exe -X utf8 -m pytest tests/test_collaboration_monitor.py -q`。
+- 結果：5 passed in 0.06s；涵蓋新增／修改／刪除、至少 60 秒穩定、再次編輯重算、還原變更、重複去重、審查中變更不能 ack、忽略輸出與越界路徑拒絕。
+- 排程：Codex heartbeat `ble-antigravity` 建立成功，status=ACTIVE、每 5 分鐘；view 回傳可檢視。
+- 限制：5 個測試驗證偵測規則，不代表已完成另一工具交付審查；實際背景觸發以後續執行紀錄為準。
+
 ## 新測試格式（範本）
 
 ```text

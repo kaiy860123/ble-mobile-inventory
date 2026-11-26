@@ -72,6 +72,14 @@
 - 進度：以 state.json 保存證據，render-progress.py 產生可在 Codex 選取查看的進度快照；開源工具評估見 collaboration/skills-research.md。
 - 剩餘：RPi 新版部署、實體刷機與校正、Gazebo 交付、AWS 登入後整合及最終報告實驗章。
 
+## DEV-009 — 共用資料夾自動審查
+
+- 日期：2026-11-26；需求 R29，使用者指定 Antigravity 與 Codex 使用同一專題資料夾。
+- 變更：建立每 5 分鐘本聊天 heartbeat、SHA-256 基準／穩定候選／ack 防止審查中變更被誤記通過；同時涵蓋未提交新檔與刪除。
+- 協作：開發中採唯讀審查，ready_for_review 後再修正／測試／提交整合；分支由 Codex 統一操作，覆蓋先前獨立 clone 預設。
+- 驗證：TEST-014；排程建立 ACTIVE，偵測規則 5 測試通過。初次建立因需 destination=thread 被拒，補上後建立成功，沒有重複排程。
+- 限制：本機定期輪詢，持續編輯時延後；不保證關機或排程無法執行期間的即時審查。
+
 ## 新紀錄格式（範本）
 
 ```text

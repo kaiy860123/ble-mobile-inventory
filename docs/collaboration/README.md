@@ -13,8 +13,8 @@
 
 ## Checkout 與分支
 
-1. Codex 繼續使用目前工作區；Antigravity 在另一個資料夾 clone 同一 GitHub 儲存庫。
-2. 每個任務從指定的基準 commit 建立分支，例如 `antigravity/AG-001-settings-review`。
+1. 2026-11-26 使用者指定兩工具使用同一專題資料夾；目前採共用 checkout，優先依 [自動審查流程](auto-review.md) 分配寫檔時段。若日後改為獨立 clone 再更新來源路徑。
+2. 共用 checkout 的分支由 Codex 統一切換；Antigravity 回報基準 commit 並在任務範圍編輯，避免另一工具工作中被切換檔案版本。
 3. 同一時間每個檔案只指定一位修改者；要跨範圍先列出所需修改及影響。
 4. Antigravity 交付 commit SHA 或分支；Codex 在自己的 checkout 審查及整合，再驗證合併後狀態。
 5. 有衝突時回到原始契約／需求判斷，不以「保留我的版本」取代審查。

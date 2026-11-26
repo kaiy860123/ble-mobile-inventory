@@ -5,7 +5,7 @@
 ## 開始工作
 
 1. 讀 `docs/collaboration/README.md`，確認任務、分支及檔案負責人。
-2. 依 `docs/collaboration/tasks.md` 選取已交付給你的任務；使用獨立 checkout 與工作分支。
+2. 依 `docs/collaboration/tasks.md` 選取已交付給你的任務；目前依使用者指示共用 checkout，寫檔交接與分支操作依 `docs/collaboration/auto-review.md`。
 3. 先確認目前差異與既有測試證據，再修改任務允許的檔案。
 
 ## 依工作類型讀取
@@ -15,6 +15,7 @@
 - 座標設定介面／API：`docs/design/site-settings.md`。
 - 定位、誤差或報告公式：`docs/report/methods.md`，逐項核對實作。
 - 報告圖表與結果：`docs/report/report-draft.md`；將未完成項目保留為待驗證。
+- Antigravity 新增／修改、排程審查或交接：`docs/collaboration/auto-review.md`，依共用資料夾與 fingerprint 流程執行。
 - 部署／刷機：`docs/runbook.md`、`docs/aws-deployment.md`。
 
 ## 交付
