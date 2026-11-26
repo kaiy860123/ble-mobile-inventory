@@ -9,7 +9,7 @@
 - 範圍：Anchor Local／WGS84、場地範圍、天線高度、WGS84 原點／旋轉角、預覽與持久保存。
 - 契約：`docs/design/site-settings.md`。
 - 驗收：非法值與過期版本不改檔；雲端設定不被覆寫；成功保存後開始新巡查，舊紀錄可追溯；公開頁不提供遠端修改。
-- 交接基準：本次交付 commit（啟動前回報完整 SHA）；驗證見 TEST-011／TEST-012。Antigravity 只在指定新增測試檔驗證，不改相同核心檔案。
+- 程式交接基準：`9225d6be262071ab8ad31d6fb1f8b76526a5b04e`（啟動前回報 checkout 完整 SHA）；驗證見 TEST-011／TEST-012／TEST-013。Antigravity 只在指定新增測試檔驗證，不改相同核心檔案。
 
 ## AG-001 — 座標設定獨立驗證
 
@@ -28,6 +28,15 @@
 - 只讀核對：`docs/report/methods.md`、定位／座標程式、需求與測試紀錄。
 - 驗收：四層圖一致、每條連線有資料／協定語意、現有與待部署標示一致；逐式檢查符號、單位、旋轉方向、殘差與真實誤差的區別。
 - 完成：圖檔、圖說、修正清單；沒有實測資料的圖表保留空位，不代填數字。
+
+## AG-003 — 實驗彙整工具開發（AG-001／AG-002 後）
+
+- 負責：Antigravity 開發，Codex 審查；狀態：todo。
+- 可新增：`scripts/summarize-experiments.py`、`tests/test_experiment_summary.py`、`docs/report/experiments-template.csv`、`docs/handoffs/AG-003-result.md`。既有定位核心、評估腳本與原始資料維持只讀。
+- 輸入：既有評估 JSON，加上明確填寫的實驗 metadata（來源、場地、版本、run_id、應評估時點／應盤點集合、缺測原因）。
+- 輸出：可比較的實驗表，列有效樣本、MAE／RMSE／P50／P95、定位成功率、盤點召回率及限制；若沒有分母／應盤點集合，輸出未提供，不猜測。
+- 驗收：合成 fixture 可獨立手算；分母為零、缺值、混合來源／不同版本標示正確；不將未量測延遲填成一秒，不重複計分舊位置；紀錄來源可追溯。
+- 邊界：此任務補足目前實驗彙整缺口，不代表已新增任何實機結果；欄位與 `methods.md` 定義衝突時列勘誤交 Codex 協調。
 
 ## CDX-CLOUD — AWS 登入後部署與整合
 

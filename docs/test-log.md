@@ -105,6 +105,16 @@
 - RPi 部署：SSH 連接逾時，尚未傳檔、未重啟，故 RPi 新版尚未部署；不能當作 RPi 新功能驗收。
 - 限制：手機、跨頁衝突 UI、鍵盤完整走訪待 AG-001 獨立檢查；API 衝突／失敗已有 TEST-011。
 
+## TEST-013 — 交付版本 CI、公開頁與進度互動
+
+- 程式 SHA：`9225d6be262071ab8ad31d6fb1f8b76526a5b04e`。
+- CI：GitHub Actions [45841081307](https://github.com/kaiy860123/ble-mobile-inventory/actions/runs/45841081307) completed／success；Linux 完成 Python／前端測試、建置與 Pages 發布。
+- 公開網頁：實際載入新版合成回放，顯示「非 Gazebo／實機」，座標設定停用並提示需 RPi 本地模式。
+- 文件：本地 Markdown 連結失效數 0。
+- 進度：產生約 7 KB fragment，JavaScript 語法檢查通過；使用 UTF-8 的本機預覽選取 AG-002，細節正確切換至任務證據與下一步。
+- 預覽環境修正：直接以無 charset 的一般 HTTP 預覽會誤判中文字元；改用 UTF-8 預覽包裝後互動正常。Codex fragment 本身維持原始 UTF-8，不加入完整網頁外殼。
+- 限制：預覽驗證不等同已取得 Antigravity 的測試結果；RPi 新版／AWS／實機定位仍未完成。
+
 ## 新測試格式（範本）
 
 ```text
