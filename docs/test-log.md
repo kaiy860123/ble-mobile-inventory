@@ -178,3 +178,5 @@ TEST-NNN — 測試名稱
 - 命令：`.venv/Scripts/python.exe -X utf8 -m pytest -q --ignore=tests/browser`。
 - 實際結果：128 passed in 2.38s；包含 80 個 Antigravity 獨立 API 案例及 12 個 bridge 測試。
 - browser 測試未在本機執行；CLI 任務 AG-003 第三次以僅檔案工具模式執行中，尚無交付，不能列為通過。
+
+- GitHub Actions 45855333250：verify-build 與 publish 均 success；遠端 pytest、npm test、build、封裝及 Pages 部署步驟通過。此處未取得 pytest 細項輸出，不額外宣稱 browser 案例數。
