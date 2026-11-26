@@ -23,12 +23,22 @@
 
 1. 在 RPi 的 Raspberry Pi Configuration／`raspi-config` 啟用 SSH，確認自己的使用者名稱與 IP，設定 SSH 金鑰。
 2. 本機產生已建置網頁的部署套件：`python scripts/package-project.py`。
-3. 執行 `python scripts/deploy-rpi.py <RPi-IP> --user <帳號>`，透過既有 SSH 驗證傳送並安裝。
+3. 執行 `python scripts/deploy-rpi.py <RPi-IP> --user <帳號> --install-service`，透過既有 SSH 驗證傳送並安裝。若使用密碼登入，加入 `--password-auth`，只在終端隱藏提示輸入，密碼不作命令參數或保存。首次需先以正常 SSH 完成主機金鑰信任，部署器拒絕未知或不符的主機金鑰。
 4. 在 RPi 編輯 `config/site.local.json`，填入量測得到的座標、天線高度與校正參數。
 5. 在 RPi 執行 `.venv/bin/python -m ble_inventory.cli serve --mode ble --host 0.0.0.0 --config config/site.local.json`。
 6. 同 Wi-Fi 的手機／電腦開啟 `http://<RPi-IP>:8080`。
 
 需開機自動執行時，在 RPi 執行 `bash scripts/install-service.sh`。若已存在 `config/private/site.cloud.json`，服務改用該設定。檢查 `journalctl -u ble-inventory -n 100 --no-pager`。不把本地 8080 埠直接公開到網際網路。
+
+若 RPi 對外下載慢，可在 Windows 準備符合實機 Python 版本的離線套件：
+
+```powershell
+python scripts/download-rpi-wheels.py --python-version 313
+python scripts/package-project.py --wheelhouse deliverables/rpi-wheels
+python scripts/deploy-rpi.py <RPi-IP> --user <帳號> --password-auth --install-service
+```
+
+`313` 代表 CPython 3.13，其他版本需改為實機版本。套件在 `deliverables/` 本地保存，不提交 GitHub。範例設定 `configuration_status=example` 會提示場地尚待實測；完成座標與校正後再改為 `measured`。
 
 ## XIAO 刷機
 

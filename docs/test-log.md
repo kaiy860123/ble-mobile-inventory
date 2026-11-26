@@ -50,7 +50,9 @@
 ## TEST-006 — XIAO 編譯
 
 - 命令：`python -m platformio run --project-dir firmware -e A01`。
-- 狀態：進行中，下載鏡像問題見 ISSUE-006；取得最終結果後更新。
+- 狀態：GitHub Linux CI 已成功編譯 A01、A02、A03、A04、T01、T02。
+- 證據：GitHub Actions workflow run `45777923193` conclusion=success。
+- 本機 Windows A01 亦已編譯成功：RAM 23,636 bytes、應用程式 Flash 470,768 bytes。先前下載鏡像問題見 ISSUE-006。
 - 未刷機，未測射頻廣播。
 
 ## TEST-007 — AWS 前置檢查
@@ -63,7 +65,26 @@
 
 - 命令：`python scripts/package-project.py`。
 - 結果：成功產生 `deliverables/ble-mobile-inventory.tar.gz`，包含建置網頁與 Python 程式，未包含裝置私鑰或實驗資料。
-- 限制：RPi 尚未有 SSH，未將套件安裝到實機。
+- 後續：已以另含 ARM64 wheelhouse 的套件成功安裝到 RPi，見 TEST-009／TEST-010。
+
+## TEST-009 — RPi SSH 與套件傳輸
+
+- 日期：2026-11-26；狀態：通過。
+- SSH 主機金鑰驗證通過，確認 aarch64、Python 3.13.5、Debian 13，藍牙服務 active。
+- SFTP 傳送套件後，遠端檔案 SHA-256 與本地相符。
+- 密碼僅以隱藏輸入提示使用，未保存。
+
+## TEST-010 — RPi 服務、數值與實體 BLE 啟動
+
+- 日期：2026-11-26；環境：RPi 4B／aarch64／Python 3.13.5。
+- 安裝：使用 ARM64 離線 wheelhouse，獨立 venv；`pip check` 回報 No broken requirements found。
+- 服務：ble-inventory.service 為 enabled、active/running，以部署使用者執行。
+- 藍牙：Powered=yes、Discovering=yes；API input_error 為空，source=physical、input_mode=ble。
+- 網頁與 API：HTTP 200；瀏覽器驗證開始新巡查／結束巡查，任務 ID 正確更新。
+- 原始資料：已產生並持續追加 observations.jsonl；每任務分開保存。
+- ARM64 數值檢查：以獨立四點／已知距離求解，結果 (3.0000000000000004, 4.0)，符合預期 (3,4)。
+- 證據：本地 `artifacts/deployment/rpi-verification.json`、`artifacts/ui/rpi-physical-dashboard.jpg`，不提交主機資訊或截圖到公開庫。
+- 限制：尚無專題 Tag 廣播，目前 Target 數 0；場地座標與校正仍為範例。這不是兩階段 BLE 實機精度驗收，也尚未串接 AWS。
 
 ## 新測試格式
 

@@ -2,6 +2,7 @@
   "schema_version": "1.0",
   "site_id": "indoor-demo",
   "label": "室內 BLE 盤點",
+  "configuration_status": "example",
   "frame_id": "room-local",
   "bounds_m": [0, 0, 12, 9],
   "scanner_id": "RPi01",

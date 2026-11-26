@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 TASK_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TASK_USER="$(id -un)"
+TASK_USER="${SUDO_USER:-$(id -un)}"
 if [ ! -x "$TASK_ROOT/.venv/bin/python" ]; then echo 'Run setup-rpi.sh first.'; exit 2; fi
 TASK_CONFIG="config/site.local.json"
 if [ -f "$TASK_ROOT/config/private/site.cloud.json" ]; then TASK_CONFIG="config/private/site.cloud.json"; fi
@@ -28,5 +28,6 @@ UMask=0077
 WantedBy=multi-user.target
 EOF
 sudo systemctl daemon-reload
-sudo systemctl enable --now ble-inventory.service
+sudo systemctl enable ble-inventory.service
+sudo systemctl restart ble-inventory.service
 systemctl --no-pager status ble-inventory.service
