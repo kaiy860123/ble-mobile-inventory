@@ -328,3 +328,12 @@ TEST-NNN — 測試名稱
 - worker 原 AG-004 分支已 accepted 且 clean，保留舊分支後接到已審 e353b35，再 `scripts/antigravity-bridge.py run AG-005`。status 確認 branch=antigravity/AG-005-anchor-comparison、job=running；限制為指定四檔編輯，命令 deny 不變，這只證明已派工，不代表交付驗收。
 - `.venv/Scripts/python.exe -X utf8 -m platformio run --project-dir firmware -e A05 -e A06`：兩環境成功，A05 50.881 s、A06 42.289 s；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6。A06 RAM 23,636 bytes、Flash 470,770 bytes。
 - `scripts/flash-device.py --help` 正確列出 A06；CI 編譯名單加入 A05／A06。尚未新增實體刷機、八設備接收或六 Anchor 精度證據；目前 RPi 設定及服務未改。
+
+## TEST-041：AG-005 比較工具交付與整合驗收（2026-11-28）
+
+- Antigravity官方CLI交付6cbd3d4ccb3eb5f9919bed41a22e5cd3725c18c2，四檔範圍及ready handoff吻合，原提交已匯入專用ref保留。先讀全部程式、測試與說明後執行：原交付比較測試10 passed。
+- Codex新增硬連結輸出別名回歸：初次一般沙箱在建立link時WinError5，未重現產品問題；在本地允許硬連結的測試環境再次執行，確實因DID NOT RAISE ValueError失敗。加入samefile保護後比較測試11 passed（0.38 s），完整非browser167 passed（2.44 s）。原始資料未用來做覆寫測試，僅pytest臨時資料。
+- 修正文件的A05／A06候選ID對應與無地理參考的方向用語，以及「共同有效樣本消除選擇偏差」過度宣稱；補廣播競爭效應及逐批新鮮度限制。參數、定位核心與實測設定未變更。
+- 使用既有motion-02的176批physical四Anchor原始資料與獨立六Anchor測試設定，工具明確以缺A05/A06拒絕，沒有產生六Anchor實機結果。另產生12批獨立合成比較，標simulation、formal_success_rate=null，原始輸入雜湊與真值隔離可查；本地證據artifacts/ag005-validation/。
+- CLI --help、git diff --check通過。另以25批無噪聲合成smoke驗證八設備與A05/A06封包解碼，本地證據artifacts/six-anchor-smoke.json；非physical或Gazebo結果。
+- 準備提交fcd2d62的GitHub CI 46053421624（測試／網頁發布）與46053421571（八種XIAO韌體）均success。AG-005整合後發布結果另以最終提交CI查核，不將前一提交CI冒充新提交。

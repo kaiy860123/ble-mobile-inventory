@@ -22,8 +22,8 @@
       "owner": "Codex heartbeat＋官方 agy",
       "status": "verified",
       "scope": "CLI派工／交付已驗；既有heartbeat目前PAUSED，本輪當前聊天接續",
-      "evidence": "AG-001／002／003 已 accept；AG-004 本輪交付與驗收完成，12 個橋接器測試通過",
-      "next": "AG-005由當前聊天接續審查；保留既有排程狀態，不宣稱背景正在運作"
+      "evidence": "AG-001–005已實際交付審查；本輪AG-005由當前聊天接續，原heartbeat維持PAUSED",
+      "next": "依新協作任務接續；保留既有排程暫停狀態與完整交付／驗收紀錄"
     },
     {
       "id": "CORE",
@@ -137,10 +137,10 @@
       "id": "AG-005",
       "title": "六 Anchor 擴充與公平比較",
       "owner": "Antigravity 開發＋Codex 整合",
-      "status": "in_progress",
-      "scope": "官方CLI已派工四／六比較工具、獨立測試與實驗說明；未交付驗收",
-      "evidence": "TEST-040：A05/A06編譯成功、bridge13與完整非browser156案通過，worker基準e353b35",
-      "next": "Codex審查交付並執行測試；備品逐塊刷入、量測後錄製八設備實測"
+      "status": "verified",
+      "scope": "離線四／六Anchor比較工具與實驗說明已驗收；實體新增尚待刷機",
+      "evidence": "交付6cbd3d4；Codex修正後比較11案／完整167案通過，實際拒絕缺A05/A06舊資料",
+      "next": "逐塊辨識刷入A05/A06、量測座標與高度；新八設備原始資料及獨立路徑評估"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # 共同開發任務
 
-2026-11-28 最新協作：使用者要求六 Anchor 精度改善由 Codex 與 Antigravity 共同開發。AG-005 已透過官方 CLI 派工，基準 e353b3579a7f9b33af637eb365f8937bdb2b8d3c；狀態以 bridge 為準。下列較早日期項目保留歷程，不作最新部署狀態。具體分工見 [six-anchor-plan.md](six-anchor-plan.md)。
+2026-11-28 最新協作：使用者要求六 Anchor 精度改善由 Codex 與 Antigravity 共同開發。AG-005 已透過官方 CLI 交付 6cbd3d4ccb3eb5f9919bed41a22e5cd3725c18c2，Codex 修正後比較測試11案、完整非browser167案通過；接受範圍為離線工具，新增兩塊尚待刷機。下列較早日期項目保留歷程，不作最新部署狀態。具體分工見 [six-anchor-plan.md](six-anchor-plan.md)。
 
 以下是可交接的任務規劃，不代表另一工具已開始執行。
 
@@ -101,7 +101,7 @@
 
 ## AG-005 — 四／六 Anchor 公平比較
 
-- 負責：Antigravity，Codex 執行測試、審查與整合；官方 CLI 已開始，分支 antigravity/AG-005-anchor-comparison。
+- 負責：Antigravity，Codex 執行測試、審查與整合；交付6cbd3d4，審查見 reviews/2026-11-28-AG-005-codex.md（位於docs）。離線工具驗收完成，不代表六Anchor實機精度通過。
 - 只可新增 scripts/compare-anchor-subsets.py、tests/test_anchor_comparison.py、docs/testing/six-anchor-experiment.md、docs/handoffs/AG-005-result.md；完整規格見 queue/AG-005.json。
 - 相同原始資料、模型、濾波及冷啟動，只改 Anchor 子集；保留 Target 觀測。拒絕缺 A05／A06 的資料冒充六 Anchor，真值只供評估。
 - 同時輸出各組有效數、MAE／RMSE／P50／P95，以及共同有效時間比較；正式成功率缺預定分母則未提供。合成測試不冒充實機改善。
