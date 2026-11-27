@@ -158,3 +158,9 @@ AG-003 審查發現頂層真值分離寫死 false、多 run_id 仍合併、CSV �
 - 新式 AWS 專案僅支援 ap-southeast-2；Tokyo 登入顯示 region_not_supported，改 Sydney 成功。SDK 登入需要 CRT，補安裝並在 dev 依賴加入 boto3[crt]。
 - 初次真實 WSS 測試反覆斷線。依 AWS IoT 官方規則，將 STS session token 從 canonical query 移除，在簽章後加入；產品 CloudSession／CloudPublisher 實際端到端通過，觀看者發布後斷線符合唯讀限制。新增可重現簽章 regression，npm test 3 passed。
 - 六塊同時通電實驗依最新指示保留待辦，未測不代填。
+
+## ISSUE-018：AG-004 交接操作條件與簡報版面
+
+- 發現送出器接 curl 序號重置衝突、Anchor TTL 等待條件缺漏、Gazebo 設定啟動路徑與前端建置缺漏，以及 export/ws 權限說明過度概括。
+- Codex 依現有實作修訂手冊／簡報並以本地 HTTP、合成評估與彙整命令驗證；TEST-028 通過。未修改定位核心。
+- 初次流程圖 Pages 標籤溢出，已精簡方塊文字、重排連線並重新渲染確認；22 頁逐頁看過，完整來源與限制見 docs/reviews/2026-11-27-AG-004.md。

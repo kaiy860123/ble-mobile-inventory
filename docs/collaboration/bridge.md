@@ -14,7 +14,7 @@ Google 官方 CLI `agy` 已安裝，版本 1.5.18；以既有登入執行無讀�
 
 ## 循環與唯一負責人
 
-1. Codex 更新 `queue/AG-001.json`／`AG-003.json`，明確列允許檔案、基準與依賴。使用者不需代貼 prompt。
+1. Codex 更新 `queue/AG-001.json`／`AG-003.json`／`AG-004.json`，明確列允許檔案、基準與依賴。使用者不需代貼 prompt。AG-004 為 Gazebo 組員交接簡報：Antigravity 產出內容與版型，Codex 產生成品、執行範例並逐頁渲染驗收。
 2. `antigravity-bridge.py status` 檢查指定 checkout、工作樹、任務狀態及已提交的 ready handoff。
 3. 沒有執行中工作且工作樹乾淨時，`run AG-001` 呼叫官方 CLI。Codex 建立分支，Antigravity 只編輯任務範圍、測試、寫交接，不自行切分支或發布。
 4. 橋接器確認 CLI 結果、HEAD 未意外變更、差異在任務白名單內、handoff 明確為 ready_for_review，才提交本機交付分支。CLI 的 SUCCESS 不是測試通過證據。

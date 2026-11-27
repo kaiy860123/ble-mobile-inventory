@@ -238,3 +238,12 @@ TEST-NNN — 測試名稱
 - npm test：3 passed；npm run build：成功；完整非 browser Python：149 passed in 3.83s。沒有新 BLE／RPi 資料，不當作精度或延遲量測。本地沒有執行自製 CDP browser 腳本。
 
 - 發布版本 ca01517e50afcadc7d76803e88d3a246cc9bb7ec；GitHub Actions 45974522232 的 verify-build／publish 均 success。CUA 查核公開 Pages：登入即時資料可開啟帳密表單；AWS 即時選項也要求登入，取消回到明確標示的合成回放；巡查與座標控制 disabled。沒有透過 CUA 輸入觀看者密碼，實際 Cognito／WSS 驗證使用上述產品 CloudSession 網路測試。
+
+## TEST-028：Gazebo 組員交接簡報與範例驗收（2026-11-27）
+
+- Antigravity 官方 CLI 交付 f7430b2e4c2fcf6e6e0a0c0f15f633b0aa2d067d；Codex 修訂操作前提及版面。
+- Python 3.12.10：`artifacts/verify-ag004.py` 通過 22 頁結構／來源／JSON 範例／數值例、本地 API accepted／拒絕／停止／新巡查／空批與既有合成 fixture 的 evaluate／summary CLI。初次沙箱 HTTP 未完成已停止，正常工具審核後相同命令 1.21s 通過。
+- `python -m pytest -q tests/test_antigravity_bridge.py`：12 passed in 0.08s。
+- 合成評估 skipped_unmatched=0；90／85／65 個有效位置，RMSE 1.106／0.802／0.349 m，與既有基準一致；非新增 Gazebo 或 BLE 性能證據。
+- 可編輯雲端簡報 22 頁逐頁原尺寸渲染檢查，修訂 4／9／15 頁再次檢查；6 個原生表格與 2 頁原生流程圖。PowerPoint 匯出儲存成功；桌面 PowerPoint 相容性未測。
+- 詳細範圍與發現：docs/reviews/2026-11-27-AG-004.md。未進行 RPi、實體通電或新 AWS 部署。

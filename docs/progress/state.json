@@ -1,6 +1,6 @@
 {
   "updated_at": "2026-11-27",
-  "baseline": "56a431e2ddb484660344f77634977f6ac514ea34（自動交付審查與整合）",
+  "baseline": "f2c1d0c + AG-004 f7430b2（Codex 修訂交接教材，非模擬驗收）",
   "milestones": [
     {
       "date": "2026-12-10",
@@ -21,9 +21,9 @@
       "title": "自動派工與雙向交接",
       "owner": "Codex heartbeat＋官方 agy",
       "status": "verified",
-      "scope": "CLI 登入探測與 AG-001 真實派工已執行",
-      "evidence": "每 5 分鐘檢查兩個 checkout；AG-001 自動交付與驗收完成，橋接器 12 測試通過；AG-003 僅檔案工具模式執行中",
-      "next": "依交付、測試與 accept 接續佇列；不再人工轉貼，見 bridge.md"
+      "scope": "官方 CLI 派工、交付、Codex 驗收循環已實際執行",
+      "evidence": "AG-001／002／003 已 accept；AG-004 本輪交付與驗收完成，12 個橋接器測試通過",
+      "next": "依佇列及交付接續，保留 SHA／fingerprint／驗收證據"
     },
     {
       "id": "CORE",
@@ -123,6 +123,15 @@
       "scope": "架構與方法草稿完成",
       "evidence": "四種 Mermaid 視圖、公式及程式對照已建立",
       "next": "加入實機／Gazebo／AWS 證據，再產出最終繳交版"
+    },
+    {
+      "id": "AG-004",
+      "title": "Gazebo 組員整合交接簡報",
+      "owner": "Antigravity 內容／Codex 驗收",
+      "status": "verified",
+      "scope": "22 頁交接教材與操作範例；非 Gazebo 實驗完成",
+      "evidence": "TEST-028：JSON／數值／本地 API／合成評估通過；橋接器 12 passed；22 頁逐頁 QA、PowerPoint 匯出已存",
+      "next": "使用者將交接教材交組員；SIM-001 場景、航線、觀測與真值待提供"
     }
   ]
 }

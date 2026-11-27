@@ -1,0 +1,841 @@
+{
+  "title": "BLE 移動盤點與定位：Gazebo 整合交接簡報",
+  "date": "2026-11-27",
+  "baseline_sha": "f2c1d0c2d9bd6328e30e87cd7aaa514a1a9091bb",
+  "slides": [
+    {
+      "id": "S01",
+      "title": "BLE 移動盤點與定位：Gazebo 整合交接手冊",
+      "layout": "cover",
+      "subtitle": "共用觀測契約 v1.0、即時接入、離線評估與交付規範（SIM-001）",
+      "bullets": [
+        "對象：負責 Gazebo／SITL 模擬場景、飛控航線與 BLE 觀測模型的合作組員",
+        "核心原則：實體與模擬共用定位核心；觀測僅含 RSSI／高度，真值嚴格另存評估",
+        "公開儲存庫：https://github.com/kaiy860123/ble-mobile-inventory",
+        "公開唯讀頁面：https://kaiy860123.github.io/ble-mobile-inventory/",
+        "基準版本：f2c1d0c2d9bd6328e30e87cd7aaa514a1a9091bb（2026-11-27）"
+      ],
+      "notes": "本簡報為交給 Gazebo 合作組員的工程實作導向整合手冊，對應任務 SIM-001。簡報與隨附的 docs/handoffs/AG-004-integration-guide.md 定義了雙方對接的唯一契約：Gazebo 端只需輸出符合 observation.schema.json v1.0 的觀測批次，並另存對齊輸入時鐘的獨立真值檔 truth.jsonl；我方共用定位核心、狀態記錄器、離線評估腳本與跨來源實驗彙整工具皆已備妥。簡報中僅列出公開 GitHub 與 GitHub Pages 入口，不包含任何帳號、金鑰、實際 token 或私密網路資訊。\n\n原始頁面重點：\n對象：負責 Gazebo／SITL 模擬場景、飛控航線與 BLE 觀測模型的合作組員\n核心原則：實體與模擬共用定位核心；觀測僅含 RSSI／高度，真值嚴格另存評估\n公開儲存庫：https://github.com/kaiy860123/ble-mobile-inventory\n公開唯讀頁面：https://kaiy860123.github.io/ble-mobile-inventory/\n基準版本：f2c1d0c2d9bd6328e30e87cd7aaa514a1a9091bb（2026-11-27）",
+      "sources": [
+        "docs/contracts.md",
+        "docs/collaboration/README.md",
+        "docs/collaboration/tasks.md"
+      ]
+    },
+    {
+      "id": "S02",
+      "title": "現況：軟體與合成通路已驗，Gazebo 待接",
+      "layout": "table",
+      "subtitle": "嚴格區分「軟體／合成驗證」、「已部署」與「尚未驗證」，不跨推論",
+      "bullets": [
+        "AWS Sydney 僅通過 PC 合成資料 TLS→WSS 通路；公開頁唯讀且不含遠端控制",
+        "實體六塊同時收包、RPi 新版部署、場地校正與精度仍待辦，不要求現在操作",
+        "Gazebo 尚未交付與串接；SyntheticSource 僅為數學測試源，非 Gazebo 驗證"
+      ],
+      "table": {
+        "headers": [
+          "子系統",
+          "可引用證據",
+          "仍待驗證"
+        ],
+        "rows": [
+          [
+            "定位核心",
+            "149 Python／3 前端測試",
+            "Gazebo 與 BLE 精度"
+          ],
+          [
+            "六個 XIAO",
+            "各別刷機與 Windows BLE 解碼",
+            "六塊同收、RSSI 校正"
+          ],
+          [
+            "RPi 4B",
+            "舊版曾完成部署",
+            "目前失聯；新版／上雲"
+          ],
+          [
+            "AWS Sydney",
+            "PC 合成 TLS → WSS 通過",
+            "RPi 真實 BLE 通路"
+          ],
+          [
+            "座標編輯",
+            "本地預覽與保存通過",
+            "RPi 新版尚未部署"
+          ],
+          [
+            "Gazebo",
+            "觀測契約與評估工具就緒",
+            "組員場景、航線與資料"
+          ]
+        ]
+      },
+      "notes": "向組員對齊真實進度非常重要：目前我們已有完整的定位引擎、149 個非 browser Python 測試、實驗彙整工具，以及在 AWS Sydney（ap-southeast-2）部署完成並以 PC 合成資料通過 TLS 8883 到 Cognito WSS 443 唯讀測試的雲端通路（TEST-027）。六塊 Seeed XIAO ESP32C3（A01–A04、T01–T02）已完成各別刷機與 Windows Bleak 解碼（TEST-021–026），但六塊同時通電實驗已依使用者指定列為待辦。Gazebo 目前尚未交付，任何報告或簡報都不得把 SyntheticSource 或 send-observations.py 宣稱為 Gazebo 已串接。\n\n原始頁面重點：\nAWS Sydney 僅通過 PC 合成資料 TLS→WSS 通路；公開頁唯讀且不含遠端控制\n實體六塊同時收包、RPi 新版部署、場地校正與精度仍待辦，不要求現在操作\nGazebo 尚未交付與串接；SyntheticSource 僅為數學測試源，非 Gazebo 驗證\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/report/report-draft.md",
+        "docs/handoffs/CDX-CLOUD.md",
+        "docs/handoffs/HW-001-flashing.md"
+      ]
+    },
+    {
+      "id": "S03",
+      "title": "雙方分工：以觀測 API 為整合邊界",
+      "layout": "two-column",
+      "subtitle": "明確切割飛控／模擬環境與共用定位核心，確保真值與觀測隔離",
+      "bullets": [
+        "飛控導航真值與 BLE 掃描器估計位置嚴格分離，互不回灌",
+        "同一份定位演算法同時服務實體 RPi 步行實驗與 Gazebo 模擬實驗"
+      ],
+      "columns": [
+        {
+          "heading": "Codex／我方",
+          "lines": [
+            "維護觀測契約與輸入驗證",
+            "共用兩階段定位與資料記錄",
+            "本地網頁、回放及離線評估",
+            "AWS／RPi 部署與整合驗收",
+            "Antigravity：交接文件與獨立核對"
+          ]
+        },
+        {
+          "heading": "Gazebo 合作組員",
+          "lines": [
+            "世界場景、Anchor／Target 擺放",
+            "SITL 起飛、轉折巡查與返航",
+            "三維 RSSI、噪聲與漏收模型",
+            "UTC 時鐘映射與觀測 POST",
+            "分離真值、版本與重現 README"
+          ]
+        }
+      ],
+      "notes": "分工邊界的核心設計是「只交換標準觀測，不共享求解內部狀態」。Gazebo 組員可以自由選擇 ROS 2、PX4／ArduPilot SITL 或獨立 Python 橋接節點，只要最終透過 HTTP POST 送出合法 JSON 批次（或先產出合規 observations.jsonl 驗證），並把對應的真實座標獨立寫入 truth.jsonl 即可。注意：飛控自己的導航定位（例如 Gazebo 真值位姿或 EKF）只用於控制無人機飛行與產生 RSSI 距離，絕不能把掃描器 XY 或 Target 座標送進定位 API。\n\n原始頁面重點：\n飛控導航真值與 BLE 掃描器估計位置嚴格分離，互不回灌\n同一份定位演算法同時服務實體 RPi 步行實驗與 Gazebo 模擬實驗\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/collaboration/README.md",
+        "docs/collaboration/tasks.md",
+        "docs/contracts.md"
+      ]
+    },
+    {
+      "id": "S04",
+      "title": "系統全景與資料流邊界",
+      "layout": "diagram",
+      "subtitle": "PC 合成上雲已驗；Gazebo、六塊同收與 RPi 上雲待驗",
+      "bullets": [
+        "Gazebo 透過 external 模式接入與實體 BLE 完全相同的定位引擎與儲存格式",
+        "獨立真值僅供離線評估腳本比對，絕不進入即時定位服務"
+      ],
+      "diagram": {
+        "nodes": [
+          {
+            "id": "gazebo",
+            "label": "Gazebo／SITL\n待串接"
+          },
+          {
+            "id": "xiao",
+            "label": "六個 XIAO BLE\n待 RPi 同收"
+          },
+          {
+            "id": "core",
+            "label": "共用定位核心\nserver＋engine"
+          },
+          {
+            "id": "store",
+            "label": "RunStore／離線評估\n合成案例已驗"
+          },
+          {
+            "id": "aws",
+            "label": "AWS Sydney\n合成通路已驗"
+          },
+          {
+            "id": "pages",
+            "label": "Pages\n唯讀觀看"
+          }
+        ],
+        "edges": [
+          {
+            "from": "gazebo",
+            "to": "core",
+            "label": "POST /api/observations (v1.0)"
+          },
+          {
+            "from": "xiao",
+            "to": "core",
+            "label": "BLE 0xFFFF 廣播（待同收）"
+          },
+          {
+            "from": "core",
+            "to": "store",
+            "label": "raw observations ＋ states.jsonl"
+          },
+          {
+            "from": "gazebo",
+            "to": "store",
+            "label": "獨立 truth.jsonl（僅離線評估）"
+          },
+          {
+            "from": "core",
+            "to": "aws",
+            "label": "MQTT TLS 8883（PC合成已驗）"
+          },
+          {
+            "from": "aws",
+            "to": "pages",
+            "label": "Cognito＋WSS 443 唯讀訂閱"
+          }
+        ]
+      },
+      "notes": "這張全景圖對照報告第一層架構（docs/report/diagrams/01-context.md）。Gazebo 端只需關心兩條輸出箭頭：第一條是即時或回放時把合法觀測送入共用核心的 POST /api/observations（只含 RSSI 與可選已知高度）；第二條是把模擬真值另存為 truth.jsonl 交給離線評估腳本。共用核心收到合法批次後會自動完成兩階段定位、追加原始紀錄 data/raw/<run_id>/observations.jsonl 與狀態快照 data/processed/<run_id>/states.jsonl，並在有啟用雲端時每秒發布最新精簡狀態。\n\n原始頁面重點：\nGazebo 透過 external 模式接入與實體 BLE 完全相同的定位引擎與儲存格式\n獨立真值僅供離線評估腳本比對，絕不進入即時定位服務\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/report/diagrams/01-context.md",
+        "docs/report/report-draft.md",
+        "docs/contracts.md"
+      ]
+    },
+    {
+      "id": "S05",
+      "title": "部署與協定：本地接入，雲端唯讀觀看",
+      "layout": "table",
+      "subtitle": "本地 HTTP 8080 僅限本機或可信任區網，跨網觀看走 AWS 加密通道",
+      "bullets": [
+        "本地控制端點需 X-Control-Token 且強制同源檢查（無 CORS）",
+        "觀測寫入端點需 Authorization: Bearer <BLE_INGEST_TOKEN>，切勿將 token 放入 URL"
+      ],
+      "table": {
+        "headers": [
+          "路徑",
+          "協定／驗證",
+          "用途與限制"
+        ],
+        "rows": [
+          [
+            "Gazebo → 核心",
+            "HTTP :8080／Bearer",
+            "POST /api/observations"
+          ],
+          [
+            "本地網頁 → 核心",
+            "HTTP／WS :8080",
+            "控制需 Token＋同源；WS 檢查 Origin"
+          ],
+          [
+            "核心 → AWS IoT",
+            "TLS :8883／X.509",
+            "QoS 0；最新精簡狀態"
+          ],
+          [
+            "觀看者 → AWS",
+            "WSS :443／Cognito",
+            "登入後唯讀訂閱"
+          ],
+          [
+            "GitHub Pages",
+            "HTTPS :443",
+            "靜態頁／回放；無控制權限"
+          ]
+        ]
+      },
+      "notes": "組員在開發機或同實驗區網測試時，可以直接在本機啟動 ble-inventory serve --mode external，把 Gazebo 橋接程式指向 http://127.0.0.1:8080/api/observations；若跨主機連到另一台測試機或 RPi，請確認防火牆僅對可信任實驗區網開放 8080 埠，絕不將 8080 埠直接暴露到網際網路。AWS 雲端連線憑證與私密設定均留在本地忽略區 config/private/，組員整合模擬階段不需要接觸 AWS 帳號或憑證。\n\n原始頁面重點：\n本地控制端點需 X-Control-Token 且強制同源檢查（無 CORS）\n觀測寫入端點需 Authorization: Bearer <BLE_INGEST_TOKEN>，切勿將 token 放入 URL\n勘誤：/api/export 不要求 X-Control-Token；/api/ws 只檢查 Origin。控制與設定寫入才要求控制 Token。\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/report/diagrams/02-deployment.md",
+        "src/ble_inventory/server.py",
+        "docs/contracts.md"
+      ]
+    },
+    {
+      "id": "S06",
+      "title": "觀測契約 v1.0：六組必要規則",
+      "layout": "table",
+      "subtitle": "嚴格執行 additionalProperties: false，任何未知或真值欄位一律回傳 400",
+      "bullets": [
+        "同一批內每個 device_id 僅可出現一次；未收到的設備省略，空陣列 observations: [] 合法",
+        "Anchor／Target 角色由場地設定名單決定（預設 A01–A04、T01–T02），未登錄 ID 會被略過"
+      ],
+      "table": {
+        "headers": [
+          "欄位",
+          "型別／範圍",
+          "語意"
+        ],
+        "rows": [
+          [
+            "schema_version",
+            "固定 \"1.0\"",
+            "契約版本"
+          ],
+          [
+            "timestamp",
+            "有限數值 > 0",
+            "Unix UTC 秒；±30 s；不可倒退"
+          ],
+          [
+            "source／scanner_id",
+            "simulation／設定 ID",
+            "Gazebo 用 simulation；ID 須一致"
+          ],
+          [
+            "sequence",
+            "非負整數",
+            "同巡查嚴格遞增；重設先開新巡查"
+          ],
+          [
+            "scanner_height_m",
+            "選填有限公尺值",
+            "同 Local 高度基準；缺少時用設定"
+          ],
+          [
+            "observations[]",
+            "0–256 筆；ID 唯一",
+            "device_id、RSSI；未知／真值鍵拒絕"
+          ]
+        ]
+      },
+      "notes": "所有欄位皆對應 src/contracts/observation.schema.json 與 src/ble_inventory/contracts.py。特別提醒兩個實作細節：第一，JSON Schema 定義 scanner_height_m 與 rssi_at_1m_dbm 的型別為 number（未含 null），雖然 Python 驗證器容許 None，但為了同時通過嚴格 JSON Schema 檢查，未提供時建議直接省略該鍵而非填 null。第二，rssi_at_1m_dbm 是一公尺接收訊號校正值（單位 dBm），不是晶片射頻發射功率；讀取優先序為「場地設定單一設備專屬值 → 封包 rssi_at_1m_dbm → 場地設定全域預設值」。\n\n原始頁面重點：\n同一批內每個 device_id 僅可出現一次；未收到的設備省略，空陣列 observations: [] 合法\nAnchor／Target 角色由場地設定名單決定（預設 A01–A04、T01–T02），未登錄 ID 會被略過\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "src/contracts/observation.schema.json",
+        "src/ble_inventory/contracts.py",
+        "docs/contracts.md"
+      ]
+    },
+    {
+      "id": "S07",
+      "title": "合法 Observation JSON 範例與禁用欄位",
+      "layout": "code",
+      "subtitle": "格式範例；送到即時 API 前須換成當前 UTC 秒",
+      "bullets": [
+        "此 JSON 僅包含量測時刻、掃描器已知高度與各設備 RSSI，不含任何 XY 座標",
+        "嚴禁夾帶 scanner_position、targets、truth、ground_truth 等欄位（驗證器直接拒絕）",
+        "JSONL 檔案每行須為一筆單行 JSON（無換行縮排），方便送出器逐行解析"
+      ],
+      "code": {
+        "language": "json",
+        "text": "{\n  \"schema_version\": \"1.0\", \"source\": \"simulation\",\n  \"timestamp\": 1795651200.0,\n  \"scanner_id\": \"RPi01\", \"sequence\": 0,\n  \"scanner_height_m\": 1.2,\n  \"observations\": [\n    {\"device_id\": \"A01\", \"rssi_dbm\": -70.5},\n    {\"device_id\": \"A02\", \"rssi_dbm\": -72.8},\n    {\"device_id\": \"A03\", \"rssi_dbm\": -72.5},\n    {\"device_id\": \"T01\", \"rssi_dbm\": -65.2}\n  ]\n}"
+      },
+      "notes": "上列範例可直接用於 schema 驗證或替換為當前 UTC timestamp 後透過 curl POST 送出。注意若在真實批次中某秒只收到 2 個 Anchor 或 0 個設備，應如實省略未收到的設備（甚至送出 observations: []），不要用上一次的舊 RSSI 補齊，因為引擎本身有 anchor_ttl_s（預設 3 s）與 stale_after_s（預設 10 s）機制，會如實呈現資料不足或暫未收到。完整單行 JSONL 範例見手冊 AG-004-integration-guide.md 與 tests/fixtures/observations.jsonl。\n\n原始頁面重點：\n此 JSON 僅包含量測時刻、掃描器已知高度與各設備 RSSI，不含任何 XY 座標\n嚴禁夾帶 scanner_position、targets、truth、ground_truth 等欄位（驗證器直接拒絕）\nJSONL 檔案每行須為一筆單行 JSON（無換行縮排），方便送出器逐行解析\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/contracts.md",
+        "tests/fixtures/observations.jsonl",
+        "src/ble_inventory/contracts.py"
+      ]
+    },
+    {
+      "id": "S08",
+      "title": "Local 座標：軸向、旋轉與高度要一致",
+      "layout": "two-column",
+      "subtitle": "統一場地公制座標與高度面，避免 Gazebo 世界軸向與核心定義不一致",
+      "bullets": [
+        "Local 單位為公尺（m），範例邊界 bounds_m: [0, 0, 12, 9]，預設原點在場地角落",
+        "高度差運算要求所有設備高度皆相對於同一 Local z=0 基準面"
+      ],
+      "columns": [
+        {
+          "heading": "平面與地理參考",
+          "lines": [
+            "單位：公尺；零旋轉 X 東、Y 北",
+            "θ：Local +X 自正東逆時針",
+            "θ = 90°：X 北、Y 西",
+            "[E,N]ᵀ = R(θ)[x,y]ᵀ，U = z",
+            "無真實原點：georeference = null"
+          ]
+        },
+        {
+          "heading": "高度與真值分離",
+          "lines": [
+            "scanner_height_m：已知天線高度",
+            "Anchor z／Target 高度共用基準",
+            "地理原點高度對應 Local z = 0",
+            "掃描器 XY 與 Target 真值另存",
+            "Anchor 座標在網頁／設定檔修改"
+          ]
+        }
+      ],
+      "notes": "Gazebo 預設世界座標系通常是右手系 ENU（+X 東、+Y 北、+Z 上），與本系統 rotation_deg = 0° 完全一致；但若組員的室內模型或建築牆面有旋轉，請在場地設定檔與交付 README 中明確註記原點位置與旋轉角 θ（自正東逆時針）。切記：若模擬無人機在飛行高度 2.5 m 巡查而 Anchor 高度為 1.2 m，Δh = 1.3 m，必須在觀測 JSON 中送出即時 scanner_height_m: 2.5，不可讓系統誤用預設 1.2 m，否則水平距離轉換會產生系統性誤差。\n\n原始頁面重點：\nLocal 單位為公尺（m），範例邊界 bounds_m: [0, 0, 12, 9]，預設原點在場地角落\n高度差運算要求所有設備高度皆相對於同一 Local z=0 基準面\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/report/methods.md",
+        "src/ble_inventory/coordinates.py",
+        "config/site.example.json"
+      ]
+    },
+    {
+      "id": "S09",
+      "title": "模擬時鐘映射、序號遞增與暫停處理",
+      "layout": "diagram",
+      "subtitle": "即時 API 採牆鐘 UTC ±30 s 窗口，模擬時間必須單調映射並與真值同步",
+      "bullets": [
+        "即時寫入條件：|timestamp - server_utc| <= 30 s 且 sequence 嚴格遞增、timestamp 不倒退",
+        "Gazebo 重開且 sequence 歸零前，必須先呼叫開始新巡查建立新 run_id",
+        "暫停或 RTF < 1 時不可送出過期時間戳；須依同一映射時鐘記錄 truth.jsonl"
+      ],
+      "diagram": {
+        "nodes": [
+          {
+            "id": "sim",
+            "label": "Gazebo 模擬時鐘 t_sim"
+          },
+          {
+            "id": "map",
+            "label": "UTC 映射／送出時刻打點"
+          },
+          {
+            "id": "api",
+            "label": "觀測 POST\n/api/observations"
+          },
+          {
+            "id": "truth",
+            "label": "獨立 truth.jsonl (同 t_utc)"
+          },
+          {
+            "id": "ctrl",
+            "label": "先開始新巡查\n再重設 sequence=0"
+          }
+        ],
+        "edges": [
+          {
+            "from": "sim",
+            "to": "map",
+            "label": "記錄 t0 與 sim_time_s 對照"
+          },
+          {
+            "from": "map",
+            "to": "api",
+            "label": "seq 0,1,2...（暫停時停發）"
+          },
+          {
+            "from": "map",
+            "to": "truth",
+            "label": "同步寫入對齊輸入時鐘"
+          },
+          {
+            "from": "ctrl",
+            "to": "api",
+            "label": "新 run_id 重設 seq=-1"
+          }
+        ]
+      },
+      "notes": "時鐘映射是 Gazebo 串接最常踩坑之處。規則如下：1) 啟動新巡查時記下牆鐘基準 t0（或於發送當下取系統 UTC time.time()），並確保每批觀測的 timestamp 與對應 truth.jsonl 的 timestamp 使用完全相同的 mapped UTC 值，同時於組員記錄檔保留原始 sim_time_s 供追溯。2) 若模擬執行速度 RTF < 1（慢於即時），採固定基準 t0 + t_sim 最終會落後伺服器 UTC 超過 30 秒而觸發 HTTP 400；此時可改於發送瞬間打上當前 UTC（並把同一 UTC 寫入 truth.jsonl），或在說明中註明 RTF 調整方式。3) 模擬暫停時應停止發送（避免重複序號或過期時間）；恢復後若超過 10 秒，設備會自然標為 stale 並重置 RSSI 濾波器，符合真實失聯行為；若重置整個模擬，務必先觸發新巡查再從 sequence=0 送出。\n\n原始頁面重點：\n即時寫入條件：|timestamp - server_utc| <= 30 s 且 sequence 嚴格遞增、timestamp 不倒退\nGazebo 重開且 sequence 歸零前，必須先呼叫開始新巡查建立新 run_id\n暫停或 RTF < 1 時不可送出過期時間戳；須依同一映射時鐘記錄 truth.jsonl\n固定映射完整式：t_utc=t0+(t_sim−t_sim,0)，只在與牆鐘偏差不超過 30 秒時適用；暫停或非即時速度建議逐批打點並同步 truth。超時重置濾波發生於恢復收到下一筆時；stale 是暫停期間快照狀態，不是恢復後必然仍 stale。\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/contracts.md",
+        "src/ble_inventory/server.py",
+        "src/ble_inventory/engine.py"
+      ]
+    },
+    {
+      "id": "S10",
+      "title": "RSSI 模型：由接收訊號推估距離",
+      "layout": "formula",
+      "subtitle": "對數距離衰減模型與反解測距公式；數值例僅為數學試算，非實測精度",
+      "bullets": [
+        "濾波：先因果滑動中位數（範例 w=3），再 EMA（範例 α=0.65）；逾 stale_after_s=10 s 重置",
+        "斜距轉水平距離：ρ = sqrt(d̂² − Δh²)，僅接受 d̂ > |Δh|"
+      ],
+      "formulas": [
+        {
+          "expression": "r(d) = P_1m - 10 n log10(d / d0) + ε",
+          "meaning": "P₁m：1 m 接收校正值；n：路徑損耗指數；d₀ = 1 m",
+          "example": "數學例：−59 dBm、n=2、d=2 m → −65.02 dBm（非量測）"
+        },
+        {
+          "expression": "d̂ = d0 · 10^((P_1m - s_k) / (10 n))",
+          "meaning": "sₖ：濾波後 RSSI；d̂：三維斜距（m）",
+          "example": "數學例：P₁m=−59、sₖ=−79、n=2 → d̂=10 m"
+        },
+        {
+          "expression": "ρ = sqrt(d̂² - (Δh)²),  Δh = z_scanner - z_device",
+          "meaning": "Δh：同一 Local 基準之天線高度差；要求 d̂ > |Δh|",
+          "example": "數學例：d̂=5 m、Δh=1.3 m → ρ≈4.83 m"
+        }
+      ],
+      "notes": "Gazebo 端實作 BLE RSSI 觀測產生器時，建議以三維歐氏距離 d = sqrt((x_s - x_i)^2 + (y_s - y_i)^2 + (z_s - z_i)^2) 代入 r(d) = P_1m - 10 n log10(d/d0) + ε，並加入可重現隨機種子的高斯噪聲 ε、距離或遮蔽相關漏收機率與廣播週期。請特別注意：r(2) ≈ -65.02 dBm（計算式：-59 - 20 * 0.30103 = -65.0206 dBm）純屬公式驗算例，不代表實體 XIAO 在 2 m 處的真實接收值。此外，因為引擎內含因果中位數與 EMA 濾波，快速移動會產生時間延遲，設計航線速度時應納入考量並記錄飛行速度。\n\n原始頁面重點：\n濾波：先因果滑動中位數（範例 w=3），再 EMA（範例 α=0.65）；逾 stale_after_s=10 s 重置\n斜距轉水平距離：ρ = sqrt(d̂² − Δh²)，僅接受 d̂ > |Δh|\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/report/methods.md",
+        "src/ble_inventory/positioning.py",
+        "config/site.example.json"
+      ]
+    },
+    {
+      "id": "S11",
+      "title": "共用兩階段定位核心與幾何門檻",
+      "layout": "two-column",
+      "subtitle": "Gazebo 航線設計必須滿足二維幾何與移動基線，單一直線無法穩定解出 Target",
+      "bullets": [
+        "兩階段皆用 lstsq 線性初值＋Huber 權重（c=1.5 m）迭代（上限 30 步、步長 ≤ 5 m）",
+        "品質閘門採未加權 RMS 距離殘差 R_range <= max_residual_m（範例 2.5 m）；失敗保留最後有效位置"
+      ],
+      "columns": [
+        {
+          "heading": "① Anchor → 掃描器",
+          "lines": [
+            "使用最近 3 秒內 Anchor 測距",
+            "至少 3 個且幾何非共線",
+            "lstsq 初值＋Huber 迭代",
+            "距離殘差門檻：範例 2.5 m",
+            "失敗不更新位置；盤點仍可累計"
+          ]
+        },
+        {
+          "heading": "② 移動掃描器 → 靜止 Target",
+          "lines": [
+            "只使用有效掃描器估計位置",
+            "採樣間位移 ≥ 0.15 m",
+            "最近 120 秒，最多 240 筆",
+            "至少 6 筆；基線 ≥ 1.5 m",
+            "航線須轉折；仍需通過殘差門檻"
+          ]
+        }
+      ],
+      "notes": "這一頁直接影響組員設計 Gazebo 航線的成敗。請確認三點：第一，場地四個 Anchor（A01–A04）應構成良好二維包圍幾何，避免排成一線；第二，無人機巡查路徑必須包含轉折（例如矩形、L 型、橢圓或 S 型），因為若掃描器只沿單一直線飛行，累積的 p̂_k 矩陣 SVD 條件數會超過 100，引擎將正確回報共線退化而拒絕解出 Target 位置；第三，掃描器需移動足夠距離（相鄰採樣 >= 0.15 m、總包圍盒對角長 B >= 1.5 m 且達 6 筆以上）才會開始輸出 Target 有效估計。\n\n原始頁面重點：\n兩階段皆用 lstsq 線性初值＋Huber 權重（c=1.5 m）迭代（上限 30 步、步長 ≤ 5 m）\n品質閘門採未加權 RMS 距離殘差 R_range <= max_residual_m（範例 2.5 m）；失敗保留最後有效位置\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/report/methods.md",
+        "src/ble_inventory/engine.py",
+        "src/ble_inventory/positioning.py"
+      ]
+    },
+    {
+      "id": "S12",
+      "title": "啟動服務：先準備專用場地設定",
+      "layout": "code",
+      "subtitle": "所有 CLI 旗標皆逐項核對 src/ble_inventory/cli.py 之 argparse 實作",
+      "bullets": [
+        "external 模式強制檢查環境變數 BLE_INGEST_TOKEN，未設定會直接報錯退出",
+        "--config 路徑必須指向 <root>/config 目錄下的既有設定檔（server.py 安全限制）",
+        "自選長隨機 token，嚴禁寫入 Git、URL 參數、公開文件或聊天紀錄"
+      ],
+      "code": {
+        "language": "bash",
+        "text": "# Bash：在儲存庫根目錄執行（Python 3.11+／Node 已安裝）\npython -m venv .venv\nsource .venv/bin/activate\npip install -e \".[dev]\"\nnpm ci && npm run build\ncp config/site.example.json config/site.gazebo.json\n# 編輯 site.gazebo.json：Anchor／邊界／高度對齊場景\nexport BLE_INGEST_TOKEN=\"<YOUR_LONG_RANDOM_TOKEN>\"\nble-inventory serve --mode external --host 127.0.0.1 --port 8080 \\\n  --config config/site.gazebo.json --root ."
+      },
+      "notes": "核對 src/ble_inventory/cli.py：serve 子命令支援的旗標僅有五個：--config（預設 config/site.example.json）、--root（預設 .）、--mode（demo / ble / external，預設 demo）、--host（預設 127.0.0.1）、--port（int，預設 8080）。也可使用 python -m ble_inventory.cli serve 取代 ble-inventory serve。若 Gazebo 在同區網另一台主機執行，可將 --host 改為 0.0.0.0，並先自 config/site.example.json 複製建立專屬場地檔（例如 config/site.gazebo.json，放在 config/ 目錄內），將 Anchor 座標與 bounds_m 改為 Gazebo 場景實值。\n\n原始頁面重點：\nexternal 模式強制檢查環境變數 BLE_INGEST_TOKEN，未設定會直接報錯退出\n--config 路徑必須指向 <root>/config 目錄下的既有設定檔（server.py 安全限制）\n自選長隨機 token，嚴禁寫入 Git、URL 參數、公開文件或聊天紀錄\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "src/ble_inventory/cli.py",
+        "src/ble_inventory/server.py",
+        "docs/runbook.md"
+      ]
+    },
+    {
+      "id": "S13",
+      "title": "送出觀測：先驗連線，再接 Gazebo 節點",
+      "layout": "code",
+      "subtitle": "先用內建送出器確認端到端通路，再以 curl 或 Gazebo 節點直連 API",
+      "bullets": [
+        "scripts/send-observations.py 僅為 JSONL 檔案送出器（支援 file 與 --url），不是 Gazebo 模型",
+        "送出器會自動把每行 timestamp 改為當前 time.time() 並重編 sequence=0,1,2...、間隔 1 秒",
+        "Gazebo 即時節點應直接以 HTTP POST 呼叫 /api/observations（帶 Bearer Token）"
+      ],
+      "code": {
+        "language": "bash",
+        "text": "# Bash：方法 A（僅連線測試；會改時間與序號）\npython scripts/send-observations.py tests/fixtures/observations.jsonl \\\n  --url http://127.0.0.1:8080\n# A、B 擇一；改用 B 的 sequence=0 前須開始新巡查\n# 方法 B：先將上頁 JSON 存成 observation.json\npython -c 'import json,time; p=\"observation.json\"; \\\nb=json.load(open(p)); b[\"timestamp\"]=time.time(); \\\nopen(\"live.json\",\"w\").write(json.dumps(b))'\ncurl -i http://127.0.0.1:8080/api/observations \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer ${BLE_INGEST_TOKEN}\" --data-binary @live.json"
+      },
+      "notes": "核對 scripts/send-observations.py：argparse 參數只有位置參數 file 與選用參數 --url（預設 http://127.0.0.1:8080），並強制從環境變數讀取 BLE_INGEST_TOKEN。特別提醒：因為 send-observations.py 會將送出的 batch['timestamp'] 覆寫為發送當下的 time.time()，若您直接用它重送舊檔，其存檔的 states.jsonl 內的 position_at 會是發送當下的 UTC 時間，與舊 truth.jsonl 的時間會對不上；因此正式評估 Gazebo 準確度時，Gazebo 橋接程式應將同一組 mapped UTC 時間戳同時送給 API 並寫入對應的 truth.jsonl（詳見手冊第 5 節）。\n\n原始頁面重點：\nscripts/send-observations.py 僅為 JSONL 檔案送出器（支援 file 與 --url），不是 Gazebo 模型\n送出器會自動把每行 timestamp 改為當前 time.time() 並重編 sequence=0,1,2...、間隔 1 秒\nGazebo 即時節點應直接以 HTTP POST 呼叫 /api/observations（帶 Bearer Token）\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "scripts/send-observations.py",
+        "docs/contracts.md",
+        "src/ble_inventory/server.py"
+      ]
+    },
+    {
+      "id": "S14",
+      "title": "任務生命週期、控制 API 與錯誤回應",
+      "layout": "table",
+      "subtitle": "明確處理每個 HTTP 狀態碼，避免重啟模擬時發生序號衝突或誤判接收成功",
+      "bullets": [
+        "服務啟動即自動建立首個 active 任務（external 模式預設 source=\"simulation\"）",
+        "需重設序號時，先向 /api/bootstrap 取 control_token，再 POST /api/control {\"action\":\"start\"}"
+      ],
+      "table": {
+        "headers": [
+          "回應",
+          "觸發條件",
+          "處置"
+        ],
+        "rows": [
+          [
+            "200 accepted:true",
+            "批次合法，任務執行中",
+            "推進下一個 sequence"
+          ],
+          [
+            "200 accepted:false",
+            "批次合法，但任務已停止",
+            "暫停；開始新巡查後再送"
+          ],
+          [
+            "400",
+            "格式／時鐘／序號／來源錯誤",
+            "讀錯誤；修正後送出"
+          ],
+          [
+            "401",
+            "觀測 Bearer Token 不符",
+            "核對環境變數與 Header"
+          ],
+          [
+            "409",
+            "非 external 模式",
+            "以 external 模式重啟"
+          ],
+          [
+            "413",
+            "請求超過 1 MiB",
+            "縮小批次（最多 256 筆）"
+          ]
+        ]
+      },
+      "notes": "特別注意 200 {\"accepted\": false} 與 400 的差別：當操作者在本地網頁按下「結束巡查」（或呼叫 /api/control stop）時，伺服器仍會檢查合法性，但回傳 HTTP 200 且 accepted=false，並不寫入 raw 紀錄；若 Gazebo 端只檢查 status == 200 卻忽略 accepted 欄位，就可能誤以為資料已被收錄。另外，呼叫 /api/control 時必須帶 X-Control-Token（由 GET /api/bootstrap 取得）且不可帶跨來源 Origin Header，否則回傳 403。\n\n原始頁面重點：\n服務啟動即自動建立首個 active 任務（external 模式預設 source=\"simulation\"）\n需重設序號時，先向 /api/bootstrap 取 control_token，再 POST /api/control {\"action\":\"start\"}\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "src/ble_inventory/server.py",
+        "src/ble_inventory/engine.py",
+        "tests/test_server.py"
+      ]
+    },
+    {
+      "id": "S15",
+      "title": "獨立真值檔格式（truth.jsonl）與時鐘對齊",
+      "layout": "code",
+      "subtitle": "每筆一行；真值獨立保存，絕不送入觀測 API",
+      "bullets": [
+        "每行含 timestamp（須與觀測輸入時鐘一致）、scanner: [x,y,z]、targets: {ID: [x,y,z]}",
+        "座標單位為 Local 公尺（與場地設定同一框架），評估取前兩維 [x, y] 計水平誤差",
+        "時間對齊容差預設 0.25 s；若未對齊輸入時鐘，所有樣本將落入 skipped_unmatched"
+      ],
+      "code": {
+        "language": "json",
+        "text": "{\"timestamp\":1795651200,\"scanner\":[1,2,1.2],\"targets\":{\"T01\":[3,4,1.2]}}\n# 格式示例（非 Gazebo 實驗）；正式 JSONL 不含註解\n# 多個 Target 完整範例見手冊；每筆 timestamp 同觀測輸入\n\n# Bash：停止並匯出後，執行離線評估（請替換路徑）\npython scripts/evaluate-run.py \\\n  \"data/processed/<RUN_ID>/states.jsonl\" \\\n  \"runs/<EXP_ID>/truth.jsonl\" \\\n  --max-time-delta-s 0.25 --output artifacts/gazebo_eval.json"
+      },
+      "notes": "上列兩筆來自倉庫既有基準 tests/fixtures/truth.jsonl（為簡報閱讀折行；實際 JSONL 檔案每一筆必須為單行無換行）。請確認 truth.jsonl 的 timestamp 必須與實際送入 /api/observations 的批次 timestamp 採同一時鐘基準！因為引擎會把 accepted 批次的 timestamp 寫成該次有效估計的 position_at，evaluate-run.py 再以 position_at 去 truth.jsonl 做二分搜尋找最接近時間戳（預設誤差 <= 0.25 s）。若 Gazebo 端另外需要保留原始模擬時間，可另建 clock_mapping.json 記錄 sim_time_s 與 utc_timestamp 對應關係。\n\n原始頁面重點：\n每行含 timestamp（須與觀測輸入時鐘一致）、scanner: [x,y,z]、targets: {ID: [x,y,z]}\n座標單位為 Local 公尺（與場地設定同一框架），評估取前兩維 [x, y] 計水平誤差\n時間對齊容差預設 0.25 s；若未對齊輸入時鐘，所有樣本將落入 skipped_unmatched\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "tests/fixtures/truth.jsonl",
+        "scripts/evaluate-run.py",
+        "docs/contracts.md"
+      ]
+    },
+    {
+      "id": "S16",
+      "title": "離線評估：真實誤差與求解殘差分開",
+      "layout": "formula",
+      "subtitle": "核對 scripts/evaluate-run.py 實作：依 position_at 去重、0.25 s 對齊、條件於有效解",
+      "bullets": [
+        "命令：python scripts/evaluate-run.py <states> <truth> --max-time-delta-s 0.25 --output artifacts/evaluation.json",
+        "去重鍵為 (run_id, device_id, position_at)，避免每秒重複寫出的舊位置被重複計分",
+        "小殘差 R_range 不代表小真實誤差 e_k；必須同時報告有效樣本數與定位成功率"
+      ],
+      "formulas": [
+        {
+          "expression": "e_k = sqrt((x̂_k - x_k*)² + (ŷ_k - y_k*)²)",
+          "meaning": "對獨立真值的水平誤差（m）；統計 MAE／RMSE／P50／P95",
+          "example": "只評 valid；按 position_at 去重；真值時間差 ≤ 0.25 s"
+        },
+        {
+          "expression": "R_range = sqrt((1/m) Σ (||p̂ - a_i|| - ρ_i)²)",
+          "meaning": "內部測距殘差（m），衡量模型自洽，並非真實位置誤差",
+          "example": "共同偏差可能使殘差很小，真實位置誤差仍大"
+        },
+        {
+          "expression": "成功率 = 有效定位時點數 / 預定評估時點數",
+          "meaning": "盤點召回率 = |S_R ∩ G_R| / |G_R|；分母須由實驗設計提供",
+          "example": "缺值標未提供；零分母標不適用；不得只報有效解精度"
+        }
+      ],
+      "notes": "核對 scripts/evaluate-run.py 的 argparse：位置參數為 states（可吃 data/processed/<run_id>/states.jsonl 或 /api/export 匯出的 replay JSON）與 truth（truth.jsonl），選用參數為 --max-time-delta-s（float，預設 0.25）與 --output（Path，預設 artifacts/evaluation.json）。輸出 JSON 必定標記 truth_used_by_solver: false 與 skipped_unmatched 筆數。報告時切勿只貼 MAE／RMSE 而隱去有效樣本數與定位成功率，以免造成選樣偏差。\n\n原始頁面重點：\n命令：python scripts/evaluate-run.py <states> <truth> --max-time-delta-s 0.25 --output artifacts/evaluation.json\n去重鍵為 (run_id, device_id, position_at)，避免每秒重複寫出的舊位置被重複計分\n小殘差 R_range 不代表小真實誤差 e_k；必須同時報告有效樣本數與定位成功率\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "scripts/evaluate-run.py",
+        "docs/report/methods.md"
+      ]
+    },
+    {
+      "id": "S17",
+      "title": "實驗 Metadata 契約與跨來源彙整工具",
+      "layout": "code",
+      "subtitle": "使用 scripts/summarize-experiments.py 產生與報告對齊的 JSON／CSV／Markdown 表",
+      "bullets": [
+        "--source 須明確填 gazebo（不可與 synthetic／physical 混為一談或合併平均）",
+        "缺分母／未量測延遲輸出「未提供」；零分母／零樣本輸出「不適用」，絕不以 0 或 1 s 代填",
+        "同時傳入 --states 時會額外核對去重樣本數，並拒絕任何夾帶真值欄位的狀態檔"
+      ],
+      "code": {
+        "language": "bash",
+        "text": "python scripts/summarize-experiments.py \\\n  --experiment-id EXP-GAZ-001 --source gazebo \\\n  --site gazebo-warehouse-v1 --route \"loop-turn-2targets\" \\\n  --version \"<GAZEBO_GIT_SHA>\" --run-id \"<RUN_ID>\" \\\n  --evaluation artifacts/gazebo_eval.json \\\n  --states \"data/processed/<RUN_ID>/states.jsonl\" \\\n  --scheduled-eval-points \"RPi01=120;T01=120;T02=80\" \\\n  --expected-targets \"T01;T02\" --scanner-id RPi01 \\\n  --limitations \"Gazebo 模擬結果，非實體 BLE 量測\" \\\n  --csv-out artifacts/gazebo_summary.csv \\\n  --md-out artifacts/gazebo_summary.md --format markdown"
+      },
+      "notes": "上列所有旗標皆逐項核對自 scripts/summarize-experiments.py 的 _build_parser()。也可使用 --manifest 載入多筆實驗（支援 JSON 或 26 欄 CSV，範本見 docs/report/experiments-template.csv）。若未實測端到端延遲，請直接省略 --latency-ms（工具會正確輸出「未提供」，絕不可把 publish_interval_s=1.0 s 填入為實測延遲）。當 manifest 同時包含 synthetic、gazebo 與 physical 時，工具會自動設定 has_mixed_sources=true 並輸出警語提醒分開解讀。\n\n原始頁面重點：\n--source 須明確填 gazebo（不可與 synthetic／physical 混為一談或合併平均）\n缺分母／未量測延遲輸出「未提供」；零分母／零樣本輸出「不適用」，絕不以 0 或 1 s 代填\n同時傳入 --states 時會額外核對去重樣本數，並拒絕任何夾帶真值欄位的狀態檔\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "scripts/summarize-experiments.py",
+        "docs/report/experiments-template.csv",
+        "docs/report/methods.md"
+      ]
+    },
+    {
+      "id": "S18",
+      "title": "正常整合測試流程與通過預期",
+      "layout": "bullets",
+      "subtitle": "組員交付前請先在本機完成一次完整正常航線串接與離線評估",
+      "bullets": [
+        "啟動 external：確認 source=simulation、active=true",
+        "具轉折航線、4 Anchor／2 靜止 Target；每批 accepted=true",
+        "確認掃描器與 Target 產生有效估計，盤點集合含 T01／T02",
+        "停止巡查並匯出；核對 run_id、原始批次數與 manifest",
+        "以分離真值評估並彙整；正常對齊預期 skipped_unmatched=0"
+      ],
+      "notes": "正常整合測試的關鍵檢核點是「端到端可重現」：除了確認每批回傳 accepted=true 與網頁出現掃描器航跡和 Target 估計點之外，還必須確認 data/raw/<run_id>/observations.jsonl 筆數與送出筆數一致、data/raw/<run_id>/manifest.json 中 truth_used_by_solver 為 false，且用同一 run_id 的 states.jsonl 對照獨立 truth.jsonl 執行 evaluate-run.py 時，大部分或全部有效定位時點皆能於 0.25 s 內對齊（而非大量落入 skipped_unmatched）。\n\n原始頁面重點：\n1. 啟動 external 服務並核對 GET /api/state 顯示 input_mode=\"external\"、source=\"simulation\"、active=true\n2. 執行具轉折航線（含 4 Anchor、2 靜止 Target、已對齊 UTC）：每批回傳 HTTP 200 {\"accepted\":true}\n3. 巡查過程檢查 /api/state：scanner 轉 valid、Target 達 6 筆且基線 >=1.5 m 後轉 valid、counts.inventoried=2\n4. 結束巡查（POST /api/control stop）並呼叫 /api/export 與 ?format=csv；核對 data/raw/<run_id>/observations.jsonl 與 manifest.json\n5. 執行 evaluate-run.py 與 summarize-experiments.py：確認 skipped_unmatched=0、truth_used_by_solver=false 與有效誤差表產出",
+      "sources": [
+        "tests/test_server.py",
+        "tests/test_engine.py",
+        "docs/collaboration/test-matrix.md"
+      ]
+    },
+    {
+      "id": "S19",
+      "title": "異常與故障測試矩陣（必測 6 項）",
+      "layout": "table",
+      "subtitle": "確認故障路徑不偽造有效位置、不污染原始紀錄，並回傳可診斷錯誤",
+      "bullets": [
+        "所有異常案例均應記錄輸入條件、實際 HTTP 狀態與 /api/state 品質欄位供整合審查",
+        "Target 中途停止廣播（A02）與 Anchor 不足（A03）屬專題必驗核心需求"
+      ],
+      "table": {
+        "headers": [
+          "故障情境",
+          "操作與等待條件",
+          "預期"
+        ],
+        "rows": [
+          [
+            "真值／未知欄位",
+            "加入 truth 或 scanner_position",
+            "400；不寫 raw"
+          ],
+          [
+            "過期／倒退時鐘",
+            "超過 ±30 s 或比前批更早",
+            "400"
+          ],
+          [
+            "重複序號",
+            "重送／歸零未開新巡查",
+            "400；新巡查後可歸零"
+          ],
+          [
+            "Anchor 不足／共線",
+            "只留 2 個且舊 Anchor 已逾 3 s",
+            "accepted；quality=insufficient"
+          ],
+          [
+            "Target 關閉",
+            "T02 停發逾 10 s",
+            "盤點保留；visible 下降"
+          ],
+          [
+            "權限／模式／停止",
+            "錯 Token／非 external／stop",
+            "401／409／accepted:false"
+          ]
+        ]
+      },
+      "notes": "這 6 項故障測試涵蓋契約防護（真值隔離、時間窗口、序號單調）、定位品質防護（Anchor 不足不捏造位置、Target 關閉保留盤點數與最後有效位置）以及介面安全（401、409、stop 後 accepted:false）。組員可用 Python 腳本或 Gazebo 場景腳本重現後，把對應的 run_id、錯誤回應截錄或測試紀錄附於交付包中，Codex 即可快速完成整合回歸。\n\n原始頁面重點：\n所有異常案例均應記錄輸入條件、實際 HTTP 狀態與 /api/state 品質欄位供整合審查\nTarget 中途停止廣播（A02）與 Anchor 不足（A03）屬專題必驗核心需求\n勘誤：Anchor 不足須等待舊觀測超過 anchor_ttl_s，瞬間遮蔽不必立即失效；少於三點與共線需分開測。\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "tests/test_engine.py",
+        "tests/test_server.py",
+        "docs/requirements.md"
+      ]
+    },
+    {
+      "id": "S20",
+      "title": "Gazebo 組員交付包目錄與版本規範",
+      "layout": "two-column",
+      "subtitle": "所有實驗紀錄皆須可追溯程式版本、場景設定、噪聲模型與分離真值",
+      "bullets": [
+        "嚴格分檔保存 observations.jsonl 與 truth.jsonl；未量測欄位標「未提供」不猜測",
+        "建議每次獨立巡查（不同航線或噪聲設定）各自建立一個資料夾與 run_id"
+      ],
+      "columns": [
+        {
+          "heading": "交付目錄",
+          "lines": [
+            "README.md：環境與重現步驟",
+            "world/：世界、模型與擺放表",
+            "config/site.gazebo.json",
+            "runs/<exp>/observations.jsonl",
+            "truth.jsonl＋clock_mapping.json"
+          ]
+        },
+        {
+          "heading": "README 必填",
+          "lines": [
+            "Gazebo／ROS／SITL／Git 版本",
+            "起飛、轉折航線、返航與高度",
+            "RSSI、噪聲、漏收、隨機種子",
+            "RTF、UTC 映射與暫停處理",
+            "預定評估時點、G_R、限制"
+          ]
+        }
+      ],
+      "notes": "這份交付目錄規範讓雙方整合時完全不需要反覆追問「這份檔案是用哪版場景跑的」、「Anchor 座標跟 site.example.json 一樣嗎」或「時間戳怎麼對齊」。如果某項資訊在第一次交付時尚未定案（例如多組噪聲比較或最終航線），請在 README 與 metadata 明確寫「待提供」並標註版本，讓雙方仍可在既有可行動介面下先完成第一輪端到端整合驗證。\n\n原始頁面重點：\n嚴格分檔保存 observations.jsonl 與 truth.jsonl；未量測欄位標「未提供」不猜測\n建議每次獨立巡查（不同航線或噪聲設定）各自建立一個資料夾與 run_id\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/collaboration/tasks.md",
+        "docs/report/report-draft.md",
+        "docs/report/experiments-template.csv"
+      ]
+    },
+    {
+      "id": "S21",
+      "title": "整合里程碑：12/10、12/17、12/24",
+      "layout": "table",
+      "subtitle": "依既定專題時程反推交付節點，預留至少一週跨子系統整合與報告修訂",
+      "bullets": [
+        "所有日期均對應 2026 年專題既定時程（docs/requirements.md R12），可提前完成",
+        "實體六塊同時通電與 RPi 上雲維持待辦排程，與 Gazebo 串接可平行推進"
+      ],
+      "table": {
+        "headers": [
+          "目標日期",
+          "組員交付",
+          "共同產出"
+        ],
+        "rows": [
+          [
+            "12/10 主要功能",
+            "場景／航線／觀測＋真值",
+            "首輪 external 串接與誤差評估"
+          ],
+          [
+            "12/17 整合驗證",
+            "正常／故障測試與多組實驗",
+            "分來源結果表與完整 README"
+          ],
+          [
+            "12/24 展示繳交",
+            "凍結 SHA、回放與模擬章節",
+            "報告、簡報及展示"
+          ],
+          [
+            "持續同步",
+            "介面變更先核對契約",
+            "未驗證保留待測，可提前完成"
+          ]
+        ]
+      },
+      "notes": "提醒組員：12/10 是最關鍵的介面驗證節點，只要先送出一筆最短 60–90 秒、含轉折航線的合法 observations.jsonl 與同輸入時鐘 truth.jsonl，我們就能在當天完成兩階段定位驗證與誤差報告，避免把格式或時鐘問題拖到 12/17 整合週才爆發。實體 BLE 六塊同時通電實驗與 RPi 新版部署已另排待辦，與 Gazebo 串接互不阻塞。\n\n原始頁面重點：\n所有日期均對應 2026 年專題既定時程（docs/requirements.md R12），可提前完成\n實體六塊同時通電與 RPi 上雲維持待辦排程，與 Gazebo 串接可平行推進\n（投影頁以圖表／程式為主；完整操作細節見手冊。）",
+      "sources": [
+        "docs/requirements.md",
+        "docs/collaboration/tasks.md"
+      ]
+    },
+    {
+      "id": "S22",
+      "title": "最終驗收清單與交接窗口",
+      "layout": "bullets",
+      "subtitle": "資料可先交付審查；必要缺項補齊後才正式驗收通過",
+      "bullets": [
+        "觀測全數合規；真值與定位輸入分離",
+        "同一核心完成兩階段定位；異常不偽造有效解",
+        "時鐘對齊；誤差、成功率與召回率可重現",
+        "版本、場景、航線、模型與 README 齊備",
+        "未完成項目列清單；缺項標待提供並排定補交"
+      ],
+      "notes": "總結交付前最後確認：1) 請使用隨附的 docs/handoffs/AG-004-integration-guide.md 逐步驟執行啟動、送出、異常測試與評估命令；2) 若模擬環境或參數仍有待定項目，請在 README 與實驗 metadata 明確填寫「待提供」，保持可行動的交接介面；3) 交付時僅需交換程式版本、模擬檔案與紀錄，切勿包含任何私密金鑰、帳號密碼、個人本機路徑或實際 token。收到組員交付包後，將由 Codex 執行獨立整合回歸測試並更新報告實驗表。\n\n原始頁面重點：\n契約合規：100% 觀測通過 observation.schema.json v1.0 驗證，零真值欄位進入求解器\n兩階段定位：同一核心成功完成掃描器與靜止 Target 定位，異常情境不偽造有效解\n時鐘與評估：truth.jsonl 與輸入時鐘對齊（<=0.25 s），產出可重現之 evaluate-run.py 與 summarize-experiments.py 結果\n追溯完整：交付包齊備版本 SHA、場景／航線、RSSI 噪聲漏收參數、時鐘映射與可重現 README（缺項標待提供）\n公開入口：GitHub https://github.com/kaiy860123/ble-mobile-inventory ｜ Pages https://kaiy860123.github.io/ble-mobile-inventory/",
+      "sources": [
+        "docs/collaboration/tasks.md",
+        "docs/contracts.md",
+        "docs/handoffs/CDX-CLOUD.md"
+      ]
+    }
+  ]
+}

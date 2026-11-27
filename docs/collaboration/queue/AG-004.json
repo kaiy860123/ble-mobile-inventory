@@ -1,0 +1,12 @@
+{
+  "id": "AG-004",
+  "revision": 1,
+  "branch": "antigravity/AG-004-gazebo-handoff-deck",
+  "depends_on": ["AG-001", "AG-002", "AG-003"],
+  "allowed_paths": ["docs/handoffs/AG-004-slides.json", "docs/handoffs/AG-004-integration-guide.md", "docs/handoffs/AG-004-result.md"],
+  "allowed_prefixes": [],
+  "handoff": "docs/handoffs/AG-004-result.md",
+  "execution_phase": "edit_only",
+  "verification_owner": "Codex",
+  "instruction": "使用者明確要求你製作交給 Gazebo 合作組員的整合交接簡報，由 Codex 驗收後交付。此任務是你負責完整內容與簡報版型資料，Codex 使用 presentation 工具執行成品生成與逐頁 QA。只用內建檔案工具，禁止命令、安裝、瀏覽器、MCP、git 寫入或私密檔案。請先讀 docs/contracts.md、src/contracts/observation.schema.json、src/ble_inventory/contracts.py、src/ble_inventory/server.py、scripts/send-observations.py、scripts/evaluate-run.py、scripts/summarize-experiments.py、tests/fixtures/truth.jsonl 的前兩筆、config/site.example.json、docs/report/methods.md、docs/report/report-draft.md、docs/handoffs/CDX-CLOUD.md、docs/handoffs/HW-001-flashing.md、docs/runbook.md。產出繁體中文、工程實作導向的 22 頁簡報資料 docs/handoffs/AG-004-slides.json，及可直接操作的 docs/handoffs/AG-004-integration-guide.md，最後 AG-004-result.md 交接。slides.json 頂層為 title、date、baseline_sha、slides；每頁含 id、title、layout、subtitle（可空）、bullets（字串陣列）、notes（詳細講稿）、sources（倉庫相對路徑陣列）。layout 限 cover、bullets、table、code、diagram、formula、two-column。table 頁另含 table:{headers:字串陣列,rows:二維字串陣列}；code 頁含 code:{language,text}；diagram 頁含 diagram:{nodes:[{id,label}],edges:[{from,to,label}]}；formula 頁含 formulas:[{expression,meaning,example}]；two-column 頁含 columns:[{heading,lines:字串陣列}]。每頁最多 5 條短 bullets，table 最多 6 rows/5 columns，程式碼每頁不超過 14 行，超過內容放 notes 或 guide。整體畫布 1280x720，正文等效 17pt 以上，偏專業白底深藍綠工程簡報，所有表格與資料流為原生可編輯。22 頁建議順序：交接目標／現況證據／分工／系統全景／部署協定／觀測欄位／合法 JSON／Local 框架與高度／模擬時鐘映射與暫停／RSSI 模型與具體數值公式／共用定位兩階段／服務啟動與 token／送出器與 curl 接入／任務生命週期與錯誤回應／獨立真值樣本／評估 CLI／實驗 metadata 與彙整／正常整合測試／異常測試矩陣／交付目錄與版本／12-10、12-17、12-24 里程碑／最終驗收清單，可調整封面與整體敘事但總數 22。命令須逐項核對實作 argparse，不可發明旗標。Unix UTC 秒、30 秒 API 容許窗口、sequence 重置需新巡查、同批 ID 唯一且空批合法；Local 公尺零旋轉 X東Y北，旋轉自東逆時針；已知 scanner_height_m 可輸入，XY/Target 真值嚴格另存。RSSI r=P1m-10n log10(d/d0)+epsilon，P1m=-59 n=2 d=2m 時約 -65.02dBm 僅數學例，非量測。真值時鐘與 input clock 對齊、position_at 去重、0.25秒評估對齊，誤差與solver residual區分。必須完整提供可貼用 observation JSON、truth JSONL、正常/故障驗收預期、組員要交的程式版本/場景/航線/時鐘映射/噪聲漏收參數/觀測與真值分檔/README。AWS 已於 Sydney 部署並通過 PC 合成 TLS-WSS，公開頁唯讀；RPi新版與實體六塊同時收包/校正/精度待驗，Gazebo 未交付，禁止假稱已串接。使用者指定實體通電實驗待辦，不要求其現在操作。不要包含任何私人 email/IP/帳號/金鑰/實際 token/Windows 個人路徑。僅提供公開 GitHub 和 Pages。資料不足寫待提供，並保持組員可行動的交付界面。完成後逐頁自查事實及範圍，在 result 明確寫本階段測試及版面渲染未執行，由 Codex 接續，最後一行 - 狀態：ready_for_review。不要請使用者轉貼或等待中途確認。"
+}
