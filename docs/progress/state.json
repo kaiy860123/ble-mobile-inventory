@@ -83,10 +83,10 @@
       "id": "CDX-CLOUD",
       "title": "AWS 即時資料",
       "owner": "Codex＋使用者登入",
-      "status": "in_progress",
-      "scope": "Sydney 已部署，合成 TLS→WSS 與唯讀通過；Pages 確認中",
-      "evidence": "TEST-027：ACTIVE FREE；CloudFormation、裝置憑證、Cognito 觀看者完成；真實合成通路與發布拒絕通過",
-      "next": "發布 Pages 雲端設定；RPi 憑證傳送與實機連線依使用者安排待處理"
+      "status": "verified",
+      "scope": "AWS Sydney 與 Pages 已部署／合成雲端通路通過；RPi 未接",
+      "evidence": "TEST-027：TLS→IoT→Cognito WSS 合成通路、觀看者發布拒絕通過；CI 45974522232 與 Pages success；公開登入表單已查核",
+      "next": "使用本地私密觀看登入檔；RPi 憑證傳送、即時 BLE 與六塊同時通電實驗依使用者安排待處理"
     },
     {
       "id": "AG-002",

@@ -10,7 +10,7 @@ sequenceDiagram
   participant Core as contracts.py＋engine.py＋positioning.py
   participant Store as storage.py（本地檔案）
   participant Web as 本地網頁（main.js）
-  participant Cloud as AWS IoT（待部署）
+  participant Cloud as AWS IoT（Sydney 已部署）
 
   Tag-->>Input: 待射頻驗證：BLE 廣播（ID、角色、1 m 參考值）＋接收 RSSI
   Input->>Server: 觀測批次（時間、ID、RSSI、可選高度；外部 API 另驗 Bearer Token 與 UTC ±30 s）
@@ -38,7 +38,7 @@ sequenceDiagram
     Server->>Store: 追加精簡狀態快照（data/processed/<run_id>/states.jsonl）
   end
   Server-->>Web: WebSocket /api/ws 推送目前狀態（逾 10 s 未收標為 stale）
-  opt 雲端已啟用且連線（待部署）
+  opt 雲端已啟用且連線（PC 合成已驗，RPi 待串接）
     Server-->>Cloud: MQTT TLS 8883 發布精簡最新狀態（QoS 0、不保留；斷線不影響本地）
   end
 ```

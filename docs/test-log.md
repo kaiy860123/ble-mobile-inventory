@@ -236,3 +236,5 @@ TEST-NNN — 測試名稱
 - 執行 aws-provision.py 的 preflight／deploy／device／viewer，實際區域 ap-southeast-2；CloudFormation stack 成功，建立 IoT、Cognito 與本專題限定權限。裝置私鑰與觀看密碼僅留 config/private，未寄信。
 - 真實網路測試使用產品前端 web/cloud.js CloudSession，Cognito 登入及身分憑證 → MQTT WSS 訂閱；產品 CloudPublisher 使用裝置 TLS 發出 simulation 合成快照，觀看端收到 schema 1.0、六設備、獨立 aws-synthetic-smoke run_id。觀看者再嘗試發布同一 topic 後被 broker 斷線，符合唯讀規則。原始證據 artifacts/aws-cloud-smoke.json 忽略不公開。
 - npm test：3 passed；npm run build：成功；完整非 browser Python：149 passed in 3.83s。沒有新 BLE／RPi 資料，不當作精度或延遲量測。本地沒有執行自製 CDP browser 腳本。
+
+- 發布版本 ca01517e50afcadc7d76803e88d3a246cc9bb7ec；GitHub Actions 45974522232 的 verify-build／publish 均 success。CUA 查核公開 Pages：登入即時資料可開啟帳密表單；AWS 即時選項也要求登入，取消回到明確標示的合成回放；巡查與座標控制 disabled。沒有透過 CUA 輸入觀看者密碼，實際 Cognito／WSS 驗證使用上述產品 CloudSession 網路測試。

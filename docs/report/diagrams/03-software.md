@@ -26,7 +26,7 @@ flowchart LR
     CloudJS["cloud.js\nCognito 登入＋SigV4／MQTT WSS 唯讀"]
   end
 
-  subgraph AWSCloud["AWS 雲端（待部署）"]
+  subgraph AWSCloud["AWS 雲端（Sydney 已部署）"]
     IoT["AWS IoT Core／Cognito"]
   end
 
@@ -58,8 +58,8 @@ flowchart LR
   Server -->|"WS /api/ws 狀態推播與 /api/control、/api/export"| MainJS
 
   Server -.->|"待雲端驗證：精簡最新狀態（QoS 0）"| Cloud
-  Cloud -.->|"待部署：MQTT TLS 8883"| IoT
-  IoT -.->|"待部署：MQTT WSS 443 唯讀"| CloudJS
+  Cloud -.->|"RPi 待串接：MQTT TLS 8883（PC 合成已驗）"| IoT
+  IoT -->|"PC 合成通路已驗：MQTT WSS 443 唯讀"| CloudJS
   CloudJS -.->|"唯讀狀態快照回呼"| MainJS
 
   CalibCSV -.->|"多距離樣本（待實測）"| Calib
@@ -73,4 +73,4 @@ flowchart LR
 - **單一程序結構**：`RPi 單一 Python 服務程序` 內的所有模組由 `cli.py` 啟動並在同一個 `aiohttp` 程序內執行，`server.py` 負責協調輸入、`engine.py`、`storage.py`、`site_settings.py` 與 `cloud.py`；`engine.py` 本身不直接相依於檔案寫入、HTTP 或 MQTT，亦不把各檔案拆分為獨立微服務。
 - **儲存與雲端範圍**：持久化全部以本地檔案系統（`observations.jsonl`、`states.jsonl`、`manifest.json`、設定檔與私密備份）完成；第一版未部署 EC2、DynamoDB 或雲端歷史資料庫。
 - **真值隔離**：`contracts.py`（搭配 `src/contracts/observation.schema.json`）以白名單欄位拒收任何真值座標；`truth.jsonl` 僅進入事後評估腳本 `scripts/evaluate-run.py`。
-- **狀態說明**：`site_settings.py` 與 `web/site-settings.js` 已通過本機自動化與瀏覽器驗證（`TEST-011`、`TEST-012`），公開頁確認停用編輯（`TEST-013`），RPi 新版尚待部署；Gazebo、實體 XIAO 校正與 AWS 仍待外部交付或實測部署。
+- **狀態說明**：設定介面已在本機驗證，公開頁確認停用編輯，RPi 新版尚待部署。Gazebo 與實體校正仍待交付／實測；AWS 已部署並通過 PC 合成通路（TEST-027），RPi 尚未接入。本次圖形版面未重新渲染驗證。

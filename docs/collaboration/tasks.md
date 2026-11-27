@@ -50,7 +50,7 @@
 
 ## CDX-CLOUD — AWS 登入後部署與整合
 
-- 負責：Codex；狀態：in_progress（AWS Sydney 資源與合成 TLS→WSS 通路已驗證，Pages 發布確認中）。
+- 負責：Codex；狀態：verified（限 AWS Sydney 部署與合成 TLS→WSS 通路；CI 45974522232 及 Pages 已成功，公開登入入口已查核；RPi／BLE 尚未接入）。
 - 已排除：CloudShell 失敗改官方 CLI 暫時登入；本帳號僅支援 ap-southeast-2，詳見 TEST-027／ISSUE-017。RPi 裝置憑證已產生，尚未傳至 RPi。
 - 驗收：Free Plan 狀態核對、IoT／Cognito 部署、登入唯讀、RPi 發布與斷線恢復實測、0 元現金支出限制。
 
