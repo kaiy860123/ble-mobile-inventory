@@ -76,3 +76,5 @@ AWS 操作另見 [aws-deployment.md](aws-deployment.md)，Gazebo 串接見 [cont
 按「計算預覽」檢查 Local 與經緯度結果，再「保存並開始新巡查」。保存會備份原設定、寫入啟動時指定的設定檔，並建立新 run_id；舊紀錄保留。變更欄位後須重新預覽。遇到版本衝突先另行記錄修改，再重新載入。取消不保存。
 
 GitHub Pages／AWS 觀看模式不提供遠端編輯。此功能須部署新版才會在 RPi 出現；本次部署狀態見 TEST-012。XIAO 封包沒有 Anchor 座標，移動 Anchor 後更新此介面即可，無須重刷韌體。
+
+2026-11-28：TEST-031 已將新版部署至 RPi，座標欄位與不寫入預覽已實際開啟驗證；場地仍為示例值。開始實測前先量測四 Anchor 與天線高度，再保存新巡查。六設備接收已於 TEST-030 通過，詳見 docs/testing/physical-checklist.md。

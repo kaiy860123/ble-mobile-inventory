@@ -82,3 +82,9 @@
 - Antigravity 交付 slides JSON、操作指南與 handoff；Codex 逐項核對實作、執行必要命令、建立可編輯簡報並逐頁渲染驗收。
 - 允許檔案見 queue/AG-004.json；禁止編造 Gazebo／實體／RPi 已串接。六塊同時通電實驗依使用者指示待辦。
 - 2026-11-28 使用者回饋難理解，由 Codex 直接重寫同一份簡報：前 12 頁白話分工與開工、後 8 頁技術附錄。入口為 docs/handoffs/AG-004-start-here.md；原 22 頁工程版資料保留，未覆寫 Antigravity 原交付。新內容與版型保存為 AG-004-readable-*。
+
+## HW-002 — RPi 同收與新版部署（2026-11-28）
+
+- TEST-030：復連、原主機金鑰相符，60 秒六 ID 全收、66 批真實觀測。
+- TEST-031：保留設定後部署 8aab2aa；重啟後全收，RPi 座標欄位／預覽可用，未保存示例值。
+- 交接 docs/handoffs/HW-002-reception.md；位置、校正、斷電與 AWS physical 待驗。

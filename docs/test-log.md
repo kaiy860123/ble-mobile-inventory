@@ -256,3 +256,18 @@ TEST-NNN — 測試名稱
 - Python 3.12.10；新增 6 案例檢查新觀測、舊快照、合成來源、錯模式、停止與輸入錯誤。`python -m pytest -q tests/test_hardware_readiness.py`：6 passed；最終 `python -m pytest -q --ignore=tests/browser`：155 passed in 3.51s。--help 可正常執行。
 - 現場測試單與空白量測表已備妥；座標、校正、六設備同收、定位及 AWS physical 通路均待實測。未用單元測試替代硬體證據。
 - 進度產生器僅支援四種狀態，首次以 ready_for_review 填入時 assertion 阻止輸出；改以 in_progress 並在範圍明示待閱讀回饋後重新產生成功，未擴充看板狀態。
+
+## TEST-030：RPi 六設備真實 BLE 收包（2026-11-28）
+
+- 新位址 SSH／HTTP 可達，原 Ed25519 key 相符；aarch64、Python 3.13.5、service running、藍牙 powered/discovering。
+- 新巡查 20261127T172127Z_physical_2dd5d3，舊歷史保留。readiness --duration 60：59 次取樣，A01–A04／T01／T02 均有本輪新觀測，passed=true、missing=[]。
+- 結束保存 67 幀回放、66 批 raw、manifest、states；Target 已盤點／可見各 2。觀測數／RSSI 見 HW-002，聚合觀測數不作封包頻率或遺失率證據。
+- 座標 example、尚無校正或獨立真值，未評精度；T02 斷電仍待使用者實體操作確認。
+
+## TEST-031：RPi 新版與座標介面（2026-11-28）
+
+- 先下載本輪 raw／manifest／states 及設定，RPi 另備份程式、config、service，再部署 8aab2aa 與新建置 web/dist。上傳 SHA256 相符、site.local.json 位元組不變、服務重啟 active。
+- 使用現有 CPython 3.13 aarch64 離線套件；本輪無核心修改，沿用先前 155 非 browser／CI 通過版本。
+- 新任務 20261127T172421Z_physical_b7bbeb，重啟後 15 秒、15 次取樣仍全六 ID；physical／ble 正確。
+- 設定 GET／preview 200，revision 不變。CUA 真實開啟 RPi 網頁：六設備接收、Target 2、定位資料不足；座標欄位與預覽可用，示例警示正確，取消返回未保存。
+- 不包含量測、實測座標保存、精度或 AWS physical；cloud.enabled=false，未傳裝置憑證。

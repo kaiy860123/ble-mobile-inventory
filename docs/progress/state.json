@@ -1,6 +1,6 @@
 {
   "updated_at": "2026-11-28",
-  "baseline": "f2c1d0c + AG-004 f7430b2（Codex 修訂交接教材，非模擬驗收）",
+  "baseline": "8aab2aa（RPi 新版部署與六設備同收；定位待驗）",
   "milestones": [
     {
       "date": "2026-12-10",
@@ -47,28 +47,28 @@
       "id": "RPI",
       "title": "RPi 收集服務",
       "owner": "Codex",
-      "status": "blocked",
-      "scope": "歷史部署已驗，當前舊位址連線逾時，未完成新版更新",
-      "evidence": "TEST-009／010 歷史證據；TEST-029：SSH／HTTP 兩埠均逾時，未登入",
-      "next": "使用者回覆 hostname -I 目前 IP；恢復連線後先唯讀確認服務、藍牙與版本"
+      "status": "verified",
+      "scope": "新版已部署，六設備 physical 收包已驗；場地未量測",
+      "evidence": "TEST-030／031：原主機金鑰相符、藍牙／服務正常、60 秒六 ID 新觀測、重啟後 15 秒仍全收",
+      "next": "量測 Anchor／天線高度、校正 RSSI，執行定位及斷電測試"
     },
     {
       "id": "CDX-SETTINGS",
       "title": "Anchor 座標編輯",
       "owner": "Codex",
-      "status": "blocked",
-      "scope": "本地實作／桌面操作通過；RPi 新版未部署",
-      "evidence": "TEST-011：27 Python／2 前端測試；TEST-012：瀏覽器預覽與保存成功，RPi SSH 逾時尚未傳檔",
-      "next": "RPi 連線恢復後部署，Antigravity 執行獨立驗收"
+      "status": "verified",
+      "scope": "RPi 座標設定及無寫入預覽可用；實測值待填",
+      "evidence": "TEST-031：GET／preview 200、revision 不變；CUA 開啟欄位、預覽示例警示、取消返回",
+      "next": "填入實測 Anchor 座標與高度後保存新巡查；本輪未保存"
     },
     {
       "id": "HW-001",
       "title": "刷機與實體精度實驗",
       "owner": "使用者＋Codex",
       "status": "in_progress",
-      "scope": "六塊刷機已驗；實機測試單、量測空表與只讀收包工具已準備",
-      "evidence": "TEST-021–026 各別 BLE 已驗；TEST-029 檢查器 6 測試、非 browser 155 passed；RPi 舊位址仍逾時",
-      "next": "取得 RPi 目前 IP 與六塊通電狀態；先同收，再量測／校正／定位"
+      "scope": "六塊刷機與 RPi 同收通過；校正／定位／斷電待驗",
+      "evidence": "TEST-030：60 秒全六 ID、66 批 raw、Target 盤點／可見各 2；TEST-031 重啟後仍全收",
+      "next": "等 T02 斷電確認；量測場地與天線高度，校正後轉折巡查及獨立真值評估"
     },
     {
       "id": "SIM-001",
