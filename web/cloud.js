@@ -6,6 +6,15 @@ import {Sha256} from '@aws-crypto/sha256-js';
 import {formatUrl} from '@aws-sdk/util-format-url';
 import mqtt from 'mqtt';
 
+export async function signedIotWebsocketUrl(config,credentials,signingDate){
+  // IoT Core requires STS tokens after signing, outside the canonical query.
+  const {sessionToken,...signingCredentials}=credentials;
+  const signer=new SignatureV4({credentials:signingCredentials,region:config.region,service:'iotdevicegateway',sha256:Sha256});
+  const signed=await signer.presign(new HttpRequest({protocol:'wss:',hostname:config.endpoint,method:'GET',path:'/mqtt',headers:{host:config.endpoint}}),{expiresIn:300,signingDate});
+  if(sessionToken)signed.query={...signed.query,'X-Amz-Security-Token':sessionToken};
+  return formatUrl(signed);
+}
+
 export class CloudSession {
   constructor(config,onState,onStatus){this.config=config;this.onState=onState;this.onStatus=onStatus;this.auth=new CognitoIdentityProviderClient({region:config.region});this.identity=new CognitoIdentityClient({region:config.region});this.client=null;this.refreshTimer=null;this.generation=0;}
   async login(username,password,newPassword){
@@ -33,11 +42,10 @@ export class CloudSession {
     this.client?.end(true);
     this.onStatus('connecting','正在取得即時觀看權限');
     const credentials=await this.credentials();
-    const signer=new SignatureV4({credentials,region:this.config.region,service:'iotdevicegateway',sha256:Sha256});
-    const signed=await signer.presign(new HttpRequest({protocol:'wss:',hostname:this.config.endpoint,method:'GET',path:'/mqtt',headers:{host:this.config.endpoint}}),{expiresIn:300});
+    const signedUrl=await signedIotWebsocketUrl(this.config,credentials);
     if(generation!==this.generation)return;
     const clientId='viewer-'+crypto.randomUUID();
-    this.client=mqtt.connect(formatUrl(signed),{clientId,protocolVersion:4,clean:true,reconnectPeriod:0,connectTimeout:15000,keepalive:30});
+    this.client=mqtt.connect(signedUrl,{clientId,protocolVersion:4,clean:true,reconnectPeriod:0,connectTimeout:15000,keepalive:30});
     this.client.on('connect',()=>{if(generation!==this.generation)return;this.client.subscribe(this.config.topic,{qos:0},(error,grants)=>{if(error||grants?.some(g=>g.qos===128))this.onStatus('error','觀看權限未就緒，請確認管理者已完成帳號授權。');else this.onStatus('connected','已連線，等待 RPi 發布資料');});});
     this.client.on('message',(_topic,payload)=>{try{const state=JSON.parse(payload.toString());if(state.schema_version==='1.0'&&Array.isArray(state.devices)&&state.scanner&&Number.isFinite(state.timestamp))this.onState(state);}catch{this.onStatus('error','收到無法辨識的即時資料');}});
     this.client.on('error',()=>{if(generation===this.generation)this.onStatus('error','AWS 連線失敗，請確認帳號授權及網路。');});

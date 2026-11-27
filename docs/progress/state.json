@@ -68,7 +68,7 @@
       "status": "in_progress",
       "scope": "六塊刷機與各別 Windows BLE 實收完成（6/6），定位待驗",
       "evidence": "TEST-021–026：A01–A04、T01、T02 upload SUCCESS、Flash 雜湊通過；均成功解碼 BLE 廣播",
-      "next": "標記 T02，六塊供電；恢復 RPi 網路（SSH／HTTP 重查仍逾時）後同時收包、量測座標與 RSSI 校正"
+      "next": "使用者指定同時通電實驗待處理；後續恢復 RPi 網路、六塊同時收包、座標量測及 RSSI 校正"
     },
     {
       "id": "SIM-001",
@@ -83,10 +83,10 @@
       "id": "CDX-CLOUD",
       "title": "AWS 即時資料",
       "owner": "Codex＋使用者登入",
-      "status": "blocked",
-      "scope": "模板與程式已備妥／未部署",
-      "evidence": "TEST-007：尚無可用 AWS 執行登入環境",
-      "next": "登入後核對 Free Plan，部署 IoT／Cognito 並測試"
+      "status": "in_progress",
+      "scope": "Sydney 已部署，合成 TLS→WSS 與唯讀通過；Pages 確認中",
+      "evidence": "TEST-027：ACTIVE FREE；CloudFormation、裝置憑證、Cognito 觀看者完成；真實合成通路與發布拒絕通過",
+      "next": "發布 Pages 雲端設定；RPi 憑證傳送與實機連線依使用者安排待處理"
     },
     {
       "id": "AG-002",

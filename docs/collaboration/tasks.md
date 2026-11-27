@@ -50,14 +50,15 @@
 
 ## CDX-CLOUD — AWS 登入後部署與整合
 
-- 負責：Codex；狀態：blocked。
-- 阻塞：尚無可用的 AWS 執行登入環境；既有瀏覽器操作曾因無法確認網址而中斷。
+- 負責：Codex；狀態：in_progress（AWS Sydney 資源與合成 TLS→WSS 通路已驗證，Pages 發布確認中）。
+- 已排除：CloudShell 失敗改官方 CLI 暫時登入；本帳號僅支援 ap-southeast-2，詳見 TEST-027／ISSUE-017。RPi 裝置憑證已產生，尚未傳至 RPi。
 - 驗收：Free Plan 狀態核對、IoT／Cognito 部署、登入唯讀、RPi 發布與斷線恢復實測、0 元現金支出限制。
 
 ## HW-001 — 六個 XIAO 刷機與場地量測
 
 - 負責：使用者接線／標記，Codex 執行刷機與查核。
 - 狀態：in_progress；2026-11-27 A01–A04、T01、T02 六塊皆已刷機、Windows BLE 各別收到並成功解碼；RPi SSH／HTTP 仍 timeout，收包及校正／定位尚未完成（TEST-021–026，交接 HW-001-flashing.md）。
+- 最新排程：使用者指定同時通電實驗待處理，先完成 AWS；不自動要求接線或開始實體收包。
 - 驗收：每個 ID 對應實體標籤、RPi 實際收到封包、Anchor 座標與天線高度實測、校正樣本完整。
 
 ## SIM-001 — Gazebo 觀測串接

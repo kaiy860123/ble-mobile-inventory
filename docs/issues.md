@@ -151,3 +151,10 @@ AG-003 審查發現頂層真值分離寫死 false、多 run_id 仍合併、CSV �
 - 原 .venv 指向已不存在的 Codex 舊版 Python runtime。以既有 Python 3.12.10 執行 `-m venv --upgrade --without-pip .venv` 修復，保留已安裝套件；PlatformIO 6.2.0 可執行。
 - 首次 esptool stub 在 chip 辨識後回報無法驗證 Flash 連線；以 115200 baud、--no-stub flash_id 成功讀出 4 MB，再正常刷入 A01，所有段雜湊通過；尚不能斷言首次失敗根因。
 - 同日 RPi SSH／HTTP 仍未連通，列為整合待恢復，不影響已完成的 A01 刷機與 Windows BLE 廣播接收。
+
+## ISSUE-017：AWS 部署登入、區域及 WSS 簽章
+
+- CloudShell 實際回報帳戶驗證進行中；官方 CLI 2.42.4 瀏覽器暫時登入可用，無須建立長期 access key。原 MSI 管理解壓等待未完成已停止，改從官方 MSI 內嵌 CAB 本地解出 CLI，沒有進行系統全域安裝。
+- 新式 AWS 專案僅支援 ap-southeast-2；Tokyo 登入顯示 region_not_supported，改 Sydney 成功。SDK 登入需要 CRT，補安裝並在 dev 依賴加入 boto3[crt]。
+- 初次真實 WSS 測試反覆斷線。依 AWS IoT 官方規則，將 STS session token 從 canonical query 移除，在簽章後加入；產品 CloudSession／CloudPublisher 實際端到端通過，觀看者發布後斷線符合唯讀限制。新增可重現簽章 regression，npm test 3 passed。
+- 六塊同時通電實驗依最新指示保留待辦，未測不代填。

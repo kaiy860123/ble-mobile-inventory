@@ -229,3 +229,10 @@ TEST-NNN — 測試名稱
 - 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py T02 --port COM152`；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6；SUCCESS 43.617 s，四個 Flash 段雜湊通過。
 - Windows BLE 實掃 10 秒收到四筆 T02 廣播；payload 424901020200c50000，role=2、ordinal=2，產品解碼為 T02、預設 reference RSSI=-59；實收 RSSI -61 至 -58 dBm。事件數非頻率／遺失率證據。
 - 六塊皆完成各別刷機與 Windows BLE 解碼；沒有修改韌體程式。RPi SSH 與 HTTP 重查皆 timeout（本地證據 artifacts/rpi-network-check.json），尚未完成 RPi 同時收包、RSSI 校正或定位精度驗證。交接見 docs/handoffs/HW-001-flashing.md。
+
+## TEST-027：AWS Sydney 實際部署與合成通路驗證（2026-11-27）
+
+- CLI 2.42.4 官方瀏覽器暫時登入，SDK preflight 確認 ACTIVE FREE、到期 2027-05-15、當次額度 US$119.998896；CloudShell 帳戶驗證失敗及 Tokyo 區域不支援另見 ISSUE-017。
+- 執行 aws-provision.py 的 preflight／deploy／device／viewer，實際區域 ap-southeast-2；CloudFormation stack 成功，建立 IoT、Cognito 與本專題限定權限。裝置私鑰與觀看密碼僅留 config/private，未寄信。
+- 真實網路測試使用產品前端 web/cloud.js CloudSession，Cognito 登入及身分憑證 → MQTT WSS 訂閱；產品 CloudPublisher 使用裝置 TLS 發出 simulation 合成快照，觀看端收到 schema 1.0、六設備、獨立 aws-synthetic-smoke run_id。觀看者再嘗試發布同一 topic 後被 broker 斷線，符合唯讀規則。原始證據 artifacts/aws-cloud-smoke.json 忽略不公開。
+- npm test：3 passed；npm run build：成功；完整非 browser Python：149 passed in 3.83s。沒有新 BLE／RPi 資料，不當作精度或延遲量測。本地沒有執行自製 CDP browser 腳本。
