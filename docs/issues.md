@@ -145,3 +145,9 @@ ISSUE-NNN — 標題
 ## ISSUE-015：實驗彙整證據狀態與任務混用
 
 AG-003 審查發現頂層真值分離寫死 false、多 run_id 仍合併、CSV 忽略未實測延遲旗標。新增四個回歸先失敗，再修正為保留未知、拒絕混用任務、保留 latency_measured。21 個彙整測試通過，完整非 browser 149 通過；詳見同日 AG-003 審查。
+
+## ISSUE-016：主機更新後虛擬環境失效與首次 XIAO 連線
+
+- 原 .venv 指向已不存在的 Codex 舊版 Python runtime。以既有 Python 3.12.10 執行 `-m venv --upgrade --without-pip .venv` 修復，保留已安裝套件；PlatformIO 6.2.0 可執行。
+- 首次 esptool stub 在 chip 辨識後回報無法驗證 Flash 連線；以 115200 baud、--no-stub flash_id 成功讀出 4 MB，再正常刷入 A01，所有段雜湊通過；尚不能斷言首次失敗根因。
+- 同日 RPi SSH／HTTP 仍未連通，列為整合待恢復，不影響已完成的 A01 刷機與 Windows BLE 廣播接收。

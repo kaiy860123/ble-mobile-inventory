@@ -187,3 +187,45 @@ TEST-NNN — 測試名稱
 - 完整命令：`.venv/Scripts/python.exe -X utf8 -m pytest -q --ignore=tests/browser`，149 passed in 2.31s。
 - CLI 範本、合成狀態／獨立真值實跑成功；有效樣本 90/85/65，RMSE 重現 1.106/0.802/0.349 m。沒有新實機資料。
 - 完整 SHA、修正與版本欄位限制見 docs/reviews/2026-11-26-AG-003-codex.md。
+
+## TEST-021：第一塊 XIAO A01 實體刷機與 BLE 驗證（2026-11-27）
+
+- 唯一 ESP USB 序列埠 COM147；esptool 確認 ESP32-C3 revision v0.4、4 MB Flash。主機識別及韌體 SHA256 留在本地忽略的 artifacts/first-xiao-probe.json。
+- 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py A01 --port COM147`。PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6；實際 SUCCESS 22.744 s，四個 Flash 段雜湊驗證通過。
+- Windows Bleak 實掃 10 秒，收到六筆 A01 專題 manufacturer 廣播，payload 424901010100c50000，以產品 decode_advertisement 解出 A01、reference RSSI=-59；接收 RSSI -45 至 -43 dBm。事件數非封包遺失率／發送頻率證據；-59 為預設值，尚未校正。
+- RPi 既有位址的 SSH 與 HTTP 仍未連通；未完成 RPi 收包或定位驗證。只有一個 Anchor，不能驗證完整定位精度；其餘設備待接線。
+
+## TEST-022：第二塊 XIAO A02 刷機與 BLE 驗證（2026-11-27）
+
+- 唯一 ESP USB 設備 COM148，序號不同於 A01；esptool ROM 模式確認 ESP32-C3 revision v0.4、4 MB Flash。硬體識別與韌體 SHA256 留於忽略檔 artifacts/a02-hardware-probe.json。
+- 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py A02 --port COM148`；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6，SUCCESS 49.917 s，四個 Flash 段雜湊驗證通過。
+- Windows Bleak 實掃 10 秒，收到兩筆 A02 廣播；payload 424901010200c50000，產品解碼器確認 device_id=A02、預設 reference RSSI=-59；實收 RSSI -48 至 -47 dBm。事件數不作發送頻率／遺失率證據。
+- 此次未重測 RPi 連線，未完成 RPi 收包、校正或定位精度驗證；沒有修改韌體程式。
+
+## TEST-023：第三塊 XIAO A03 刷機與 BLE 驗證（2026-11-27）
+
+- COM149 的唯一 ESP USB 晶片與 A01／A02 序號不同，esptool 確認 ESP32-C3 revision v0.4、4 MB Flash。識別與韌體 SHA256 保存在忽略檔 artifacts/a03-hardware-probe.json。
+- 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py A03 --port COM149`；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6；SUCCESS 43.914 s，四個 Flash 段雜湊通過。
+- Windows BLE 實掃 10 秒收到六筆 A03 廣播，payload 424901010300c50000，產品解碼器解出 A03、預設 reference RSSI=-59；實收 RSSI -59 至 -56 dBm。事件數不作封包遺失率或頻率證據。
+- 未修改韌體程式，未重測 RPi 連線；RPi 收包、現場校正與定位仍待驗證。
+
+## TEST-024：第四塊 XIAO A04 刷機與 BLE 驗證（2026-11-27）
+
+- COM150 為不同於 A01–A03 的新設備；ESP32-C3 revision v0.4、4 MB Flash。硬體識別與韌體 SHA256 留於忽略檔 artifacts/a04-hardware-probe.json。
+- 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py A04 --port COM150`；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6；SUCCESS 42.125 s，四個 Flash 段雜湊通過。
+- Windows BLE 實掃 10 秒收到八筆 A04 廣播；payload 424901010400c50000，解碼為 A04、預設 reference RSSI=-59，實收 RSSI -59 至 -52 dBm；事件數非頻率／遺失率證據。
+- A01–A04 皆已各別刷機及 Windows BLE 驗證；未重測 RPi 連線，未完成四 Anchor 同時收包、場地校正或定位精度驗證。
+
+## TEST-025：第五塊 XIAO Target T01 刷機與 BLE 驗證（2026-11-27）
+
+- COM151 為新晶片，序號與 A01–A04 不同；ESP32-C3 revision v0.4、4 MB Flash。硬體識別及韌體 SHA256 留於忽略檔 artifacts/t01-hardware-probe.json。
+- 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py T01 --port COM151`；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6；SUCCESS 52.213 s，四個 Flash 段雜湊通過。
+- Windows BLE 實掃 10 秒收到四筆 T01 廣播；payload 424901020100c50000，role=2、ordinal=1，產品解碼為 T01、預設 reference RSSI=-59；實收 RSSI -64 至 -60 dBm。事件數非頻率／遺失率證據。
+- 尚未校正 RSSI，未重測 RPi 連線或完成 RPi 同時收包／定位驗證。
+
+## TEST-026：第六塊 XIAO Target T02 刷機與 BLE 驗證（2026-11-27）
+
+- COM152 為不同於前五塊的新晶片；ESP32-C3 revision v0.4、4 MB Flash。硬體識別與韌體 SHA256 留於忽略檔 artifacts/t02-hardware-probe.json。
+- 命令：`.venv/Scripts/python.exe -X utf8 scripts/flash-device.py T02 --port COM152`；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6；SUCCESS 43.617 s，四個 Flash 段雜湊通過。
+- Windows BLE 實掃 10 秒收到四筆 T02 廣播；payload 424901020200c50000，role=2、ordinal=2，產品解碼為 T02、預設 reference RSSI=-59；實收 RSSI -61 至 -58 dBm。事件數非頻率／遺失率證據。
+- 六塊皆完成各別刷機與 Windows BLE 解碼；沒有修改韌體程式。RPi SSH 與 HTTP 重查皆 timeout（本地證據 artifacts/rpi-network-check.json），尚未完成 RPi 同時收包、RSSI 校正或定位精度驗證。交接見 docs/handoffs/HW-001-flashing.md。

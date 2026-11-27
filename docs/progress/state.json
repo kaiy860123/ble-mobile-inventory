@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26",
+  "updated_at": "2026-11-27",
   "baseline": "56a431e2ddb484660344f77634977f6ac514ea34（自動交付審查與整合）",
   "milestones": [
     {
@@ -65,10 +65,10 @@
       "id": "HW-001",
       "title": "刷機與實體精度實驗",
       "owner": "使用者＋Codex",
-      "status": "blocked",
-      "scope": "尚未執行",
-      "evidence": "TEST-006 六種韌體編譯通過；使用者指定稍後接線",
-      "next": "連接 XIAO、標記 ID、量測 Anchor 與校正 RSSI"
+      "status": "in_progress",
+      "scope": "六塊刷機與各別 Windows BLE 實收完成（6/6），定位待驗",
+      "evidence": "TEST-021–026：A01–A04、T01、T02 upload SUCCESS、Flash 雜湊通過；均成功解碼 BLE 廣播",
+      "next": "標記 T02，六塊供電；恢復 RPi 網路（SSH／HTTP 重查仍逾時）後同時收包、量測座標與 RSSI 校正"
     },
     {
       "id": "SIM-001",

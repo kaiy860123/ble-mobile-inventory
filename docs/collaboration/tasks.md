@@ -57,7 +57,7 @@
 ## HW-001 — 六個 XIAO 刷機與場地量測
 
 - 負責：使用者接線／標記，Codex 執行刷機與查核。
-- 狀態：blocked；使用者已指定稍後接線。
+- 狀態：in_progress；2026-11-27 A01–A04、T01、T02 六塊皆已刷機、Windows BLE 各別收到並成功解碼；RPi SSH／HTTP 仍 timeout，收包及校正／定位尚未完成（TEST-021–026，交接 HW-001-flashing.md）。
 - 驗收：每個 ID 對應實體標籤、RPi 實際收到封包、Anchor 座標與天線高度實測、校正樣本完整。
 
 ## SIM-001 — Gazebo 觀測串接
