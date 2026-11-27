@@ -223,3 +223,9 @@ AG-003 審查發現頂層真值分離寫死 false、多 run_id 仍合併、CSV �
 - Codex審查發現輸出只比較resolve路徑，硬連結不同名稱仍可能指向同一輸入檔；獨立臨時檔回歸在實際可建立link環境重現未拒絕，加入Path.samefile保護後通過。
 - 文件將A05/A06候選位置對調，未設定地理參考卻使用西北用語，另稱共同有效樣本可避免選樣偏差。已統一為A05約(0,3.8)、A06約(0,1.9)，都仍待量測；以Local左上／左側描述，並明示共同成功子集仍有選擇偏差。
 - TEST-041：原10案通過，新增保護後11案及完整167案通過；四Anchor既有實機資料缺A05/A06時實際被拒，沒有冒充六Anchor。狀態：上述修正完成；實際精度改善仍待測。
+
+## ISSUE-028：晶片探測的 esptool 呼叫位置
+
+- 首次A05探測使用venv的 `python -m esptool`，回No module named esptool，探測helper中止，沒有刷入。
+- 原因：esptool由PlatformIO工具包管理，並未獨立安裝到venv的模組路徑。改用已存在且固定版本的tool-esptoolpy/esptool.py，沒有另裝新版本。
+- 修正後唯讀chip probe與TEST-042／043刷入、Flash雜湊、BLE解碼均通過；初始失敗紀錄保留在artifacts/a05-chip-probe.json。狀態：已解決。

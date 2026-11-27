@@ -1,6 +1,6 @@
 # 共同開發任務
 
-2026-11-28 最新協作：使用者要求六 Anchor 精度改善由 Codex 與 Antigravity 共同開發。AG-005 已透過官方 CLI 交付 6cbd3d4ccb3eb5f9919bed41a22e5cd3725c18c2，Codex 修正後比較測試11案、完整非browser167案通過；接受範圍為離線工具，新增兩塊尚待刷機。下列較早日期項目保留歷程，不作最新部署狀態。具體分工見 [six-anchor-plan.md](six-anchor-plan.md)。
+2026-11-28 最新協作：AG-005 已交付並驗收，比較11案／完整非browser167案通過；TEST-042／043新增A05／A06刷入與各別BLE驗證完成。使用者決定全部位置重新設定、下次實測，本輪不更新RPi配置或繼續要求接線。品質改善建議見[roadmap](../design/localization-quality-roadmap.md)，尚未部署；下列舊項目保留歷程。分工見[six-anchor-plan.md](six-anchor-plan.md)。
 
 以下是可交接的任務規劃，不代表另一工具已開始執行。
 
@@ -105,4 +105,4 @@
 - 只可新增 scripts/compare-anchor-subsets.py、tests/test_anchor_comparison.py、docs/testing/six-anchor-experiment.md、docs/handoffs/AG-005-result.md；完整規格見 queue/AG-005.json。
 - 相同原始資料、模型、濾波及冷啟動，只改 Anchor 子集；保留 Target 觀測。拒絕缺 A05／A06 的資料冒充六 Anchor，真值只供評估。
 - 同時輸出各組有效數、MAE／RMSE／P50／P95，以及共同有效時間比較；正式成功率缺預定分母則未提供。合成測試不冒充實機改善。
-- Codex 負責韌體 A06、刷機工具與 CI 擴充；兩塊硬體尚未刷入或量測，不修改目前 RPi 實測設定。演算法加權／重新校正另案，先取得四／六比較基準。
+- Codex 負責韌體、刷機與CI，兩塊已刷入／各別解碼通過；新位置全待量測，目前RPi設定未改。加權／選點／追蹤提案另案，與四／六Anchor比較分開驗證。

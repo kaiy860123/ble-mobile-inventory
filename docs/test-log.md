@@ -337,3 +337,17 @@ TEST-NNN — 測試名稱
 - 使用既有motion-02的176批physical四Anchor原始資料與獨立六Anchor測試設定，工具明確以缺A05/A06拒絕，沒有產生六Anchor實機結果。另產生12批獨立合成比較，標simulation、formal_success_rate=null，原始輸入雜湊與真值隔離可查；本地證據artifacts/ag005-validation/。
 - CLI --help、git diff --check通過。另以25批無噪聲合成smoke驗證八設備與A05/A06封包解碼，本地證據artifacts/six-anchor-smoke.json；非physical或Gazebo結果。
 - 準備提交fcd2d62的GitHub CI 46053421624（測試／網頁發布）與46053421571（八種XIAO韌體）均success。AG-005整合後發布結果另以最終提交CI查核，不將前一提交CI冒充新提交。
+
+## TEST-042：A05 刷機及實際廣播（2026-11-28，通過）
+
+- 使用者明確接上A05；核對唯一USB序列埠、晶片序號與既有六塊不同。PlatformIO工具包esptool4.5.1以no-stub flash_id辨識ESP32-C3 revision v0.4、4MB Flash。
+- 執行 `scripts/flash-device.py A05 --port <已核對埠>`，PlatformIO6.2.0／espressif32 6.10.0／NimBLE2.3.6；SUCCESS 6.512s，四個Flash區段雜湊均通過。
+- Windows Bleak掃描10s，4筆匹配A05，實收RSSI −50至−46dBm，payload=424901010500c50000，產品解碼為A05／Anchor ordinal5／referenceRSSI−59。
+- 本地完整證據artifacts/a05-chip-probe-platformio.json、a05-flash.log、a05-flash-result.json、a05-hardware-probe.json；序號及BLE位址不公開。韌體SHA256 b68f294570e9c8e05854a82f3807ef7944dc490a5df901591c354acca75260c1。
+
+## TEST-043：A06 刷機及實際廣播（2026-11-28，通過）
+
+- 使用者接回最後備品後再核對唯一USB序列埠、新晶片序號與前七塊不同；ESP32-C3 revision v0.4、4MB Flash，固定工具鏈同TEST-042。
+- `scripts/flash-device.py A06 --port <已核對埠>`：SUCCESS 6.819s，四段Flash雜湊通過。Windows掃描10s收到6筆A06，RSSI −49至−45dBm，payload=424901010600c50000，產品正確解碼Anchor ordinal6。
+- 證據artifacts/a06-*；韌體SHA256 989e06029a2f40d13193e30a7416f1a036e78b942914e0739dbf74826fcaeb3b。事件數不等同空中封包頻率／遺失率。
+- 八塊各別刷機／廣播完成，不代表RPi八設備同收或六Anchor精度通過。一次唯讀RPi檢查22／8080／API逾時，未登入／修改。使用者之後決定全部重排位置、下次測試，本輪停止硬體操作；未保存建議座標或新增名單。

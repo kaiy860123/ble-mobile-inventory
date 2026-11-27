@@ -48,9 +48,9 @@
       "title": "RPi 收集服務",
       "owner": "Codex",
       "status": "verified",
-      "scope": "新版服務運行；六設備收訊及失聯恢復通過",
+      "scope": "既有六設備收訊與失聯功能曾通過；本次連線逾時，服務狀態未確認",
       "evidence": "TEST-038／039：同一巡查Target與Anchor切電復電、盤點去重通過",
-      "next": "保留目前量測設定與原RSSI模型，後續接入AWS physical"
+      "next": "依使用者安排下次確認連線與新場地；保留目前設定及歷史"
     },
     {
       "id": "CDX-SETTINGS",
@@ -66,9 +66,9 @@
       "title": "刷機與實體精度實驗",
       "owner": "使用者＋Codex",
       "status": "in_progress",
-      "scope": "六設備／斷電恢復功能通過；校正候選未接受，精度待改善",
-      "evidence": "TEST-037：候選T01有效位置156→19；TEST-038／039功能通過",
-      "next": "A05/A06編譯已通過，待逐塊辨識刷機與實測擺放；固定模型先比較四／六Anchor"
+      "scope": "八塊各別刷機／BLE解碼完成；使用者全部重排、下次實測",
+      "evidence": "TEST-042／043：A05/A06四段Flash雜湊與各別廣播通過；六設備RPi功能見TEST-038／039",
+      "next": "下次確認連線並重新量測全部Anchor／Target／RPi；本輪不更新場地、不繼續硬體操作"
     },
     {
       "id": "SIM-001",
@@ -122,7 +122,7 @@
       "status": "in_progress",
       "scope": "靜態、保留點、移動比較及功能測試已記錄，結果非最終版",
       "evidence": "HW-003／TEST-032–039：混合結果、候選拒絕及回退均保留",
-      "next": "補足獨立重複路徑、Gazebo及AWS physical；不以有效誤差掩蓋缺解"
+      "next": "實機刷機證據已補；品質提案與已實作公式分開，新布局／Gazebo／AWS physical待驗"
     },
     {
       "id": "AG-004",
@@ -138,9 +138,18 @@
       "title": "六 Anchor 擴充與公平比較",
       "owner": "Antigravity 開發＋Codex 整合",
       "status": "verified",
-      "scope": "離線四／六Anchor比較工具與實驗說明已驗收；實體新增尚待刷機",
+      "scope": "離線比較工具已驗收，A05/A06實體刷入及各別廣播完成；新布局未量測",
       "evidence": "交付6cbd3d4；Codex修正後比較11案／完整167案通過，實際拒絕缺A05/A06舊資料",
-      "next": "逐塊辨識刷入A05/A06、量測座標與高度；新八設備原始資料及獨立路徑評估"
+      "next": "下次新場地量測後備份擴充設備名單，再錄八設備／四六比較，精度仍待驗"
+    },
+    {
+      "id": "LOC-QUALITY",
+      "title": "多Anchor品質與抗跳動改善",
+      "owner": "Codex設計＋後續Antigravity獨立驗證",
+      "status": "todo",
+      "scope": "已核對現有median/EMA/Huber與缺口，新增設計提案；未改核心／未部署",
+      "evidence": "docs/design/localization-quality-roadmap.md：權重、年齡／共識選點、RPi品質傳遞、追蹤與布局評分",
+      "next": "先診斷與離線單變因壓測，再用重排後新資料驗證；不把畫面平滑當精度"
     }
   ]
 }
