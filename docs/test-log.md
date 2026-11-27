@@ -321,3 +321,10 @@ TEST-NNN — 測試名稱
 - 使用者只斷開 A03、A04，watch-anchor-insufficient.py 在同一巡查保存 12 快照；只剩 A01／A02 新鮮，掃描器與兩 Target 均不足，position_at 連續不再更新。
 - 兩 Target 持續可見，已盤點與可見數均為 2。沒有將舊位置當新有效位置；未放寬門檻。證據 artifacts/hardware/anchor-insufficient-01/result.json。
 - 使用者確認 A03、A04 已上電，watch-anchor-recovery.py 保存 89 快照，末三次六 ID 新鮮、可見，盤點與可見 Target 仍 2。掃描器恢復 valid、新 position_at；末快照 T01 valid、T02 因 RSSI 殘差過大仍 insufficient，不宣稱全部 Target 有效定位恢復。證據 anchor-recovery-01/result.json；全程同一 run_id，服務保持 active。
+
+## TEST-040：六 Anchor 協作派工與韌體準備（2026-11-28）
+
+- 擴充 bridge 的 dispatch／delivery／import／accept 支援 AG-005；加入新任務交付偵測與依賴保護測試。`.venv/Scripts/python.exe -X utf8 -m pytest -q tests/test_antigravity_bridge.py`：13 passed；完整 `-m pytest -q --ignore=tests/browser`：156 passed，2.48 s。
+- worker 原 AG-004 分支已 accepted 且 clean，保留舊分支後接到已審 e353b35，再 `scripts/antigravity-bridge.py run AG-005`。status 確認 branch=antigravity/AG-005-anchor-comparison、job=running；限制為指定四檔編輯，命令 deny 不變，這只證明已派工，不代表交付驗收。
+- `.venv/Scripts/python.exe -X utf8 -m platformio run --project-dir firmware -e A05 -e A06`：兩環境成功，A05 50.881 s、A06 42.289 s；PlatformIO 6.2.0、espressif32 6.10.0、NimBLE 2.3.6。A06 RAM 23,636 bytes、Flash 470,770 bytes。
+- `scripts/flash-device.py --help` 正確列出 A06；CI 編譯名單加入 A05／A06。尚未新增實體刷機、八設備接收或六 Anchor 精度證據；目前 RPi 設定及服務未改。

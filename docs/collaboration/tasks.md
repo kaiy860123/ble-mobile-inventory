@@ -1,5 +1,7 @@
 # 共同開發任務
 
+2026-11-28 最新協作：使用者要求六 Anchor 精度改善由 Codex 與 Antigravity 共同開發。AG-005 已透過官方 CLI 派工，基準 e353b3579a7f9b33af637eb365f8937bdb2b8d3c；狀態以 bridge 為準。下列較早日期項目保留歷程，不作最新部署狀態。具體分工見 [six-anchor-plan.md](six-anchor-plan.md)。
+
 以下是可交接的任務規劃，不代表另一工具已開始執行。
 
 最新：AG-002 的本機交付 `28d61d6dd4e82002d53e17a4119c54aba061c679` 已找到並匯入專用 ref 待審；AG-001 已由官方 CLI 自動派工。實際執行狀態以 bridge status 與交接為準，不再要求使用者代貼。
@@ -96,3 +98,11 @@
 - 不以訓練點重算精度當獨立改善；正式成功率需事先定義評估格點；T02 斷電仍待執行。
 
 - HW-003 最新：TEST-037 完整移動路徑 176 批觀測比較，候選 T01 有效位置 156→19，因此拒絕候選並只回退 RSSI 參數；保留實測座標、最新已知高度 0.60 m 與全部資料。TEST-038 同一巡查 T02 斷電／復電及盤點去重通過；TEST-039 Anchor 不足保護通過，復電結果見 HW-003／test-log 最新紀錄。整體定位精度仍待改善，RPi physical 上雲未完成。
+
+## AG-005 — 四／六 Anchor 公平比較
+
+- 負責：Antigravity，Codex 執行測試、審查與整合；官方 CLI 已開始，分支 antigravity/AG-005-anchor-comparison。
+- 只可新增 scripts/compare-anchor-subsets.py、tests/test_anchor_comparison.py、docs/testing/six-anchor-experiment.md、docs/handoffs/AG-005-result.md；完整規格見 queue/AG-005.json。
+- 相同原始資料、模型、濾波及冷啟動，只改 Anchor 子集；保留 Target 觀測。拒絕缺 A05／A06 的資料冒充六 Anchor，真值只供評估。
+- 同時輸出各組有效數、MAE／RMSE／P50／P95，以及共同有效時間比較；正式成功率缺預定分母則未提供。合成測試不冒充實機改善。
+- Codex 負責韌體 A06、刷機工具與 CI 擴充；兩塊硬體尚未刷入或量測，不修改目前 RPi 實測設定。演算法加權／重新校正另案，先取得四／六比較基準。

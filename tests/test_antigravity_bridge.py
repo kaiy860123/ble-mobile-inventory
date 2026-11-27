@@ -38,6 +38,19 @@ def test_wrong_repository_is_rejected(monkeypatch):
         bridge.check_repo(Path('.'))
 
 
+def test_ag005_delivery_is_discoverable_and_dispatch_checks_dependencies(tmp_path, monkeypatch):
+    def fake(repo, *args):
+        if args[0] == 'for-each-ref':
+            return 'antigravity/AG-005-anchor-comparison\tnew-delivery'
+        return '狀態：ready_for_review'
+    monkeypatch.setattr(bridge, 'git', fake)
+    assert bridge.deliveries(tmp_path) == [{'task_id': 'AG-005', 'branch': 'antigravity/AG-005-anchor-comparison', 'sha': 'new-delivery'}]
+    monkeypatch.setattr(bridge, 'check_repo', lambda *args: None)
+    monkeypatch.setattr(bridge, 'state', lambda: {'jobs': {}, 'accepted': {}})
+    with pytest.raises(ValueError, match='reviews'):
+        bridge.dispatch({'checkout': str(tmp_path)}, 'AG-005')
+
+
 def test_session_permissions_are_scoped_and_do_not_enable_global_bypass():
     settings = bridge.session_settings({'allowed_paths': ['tests/a.py'], 'allowed_prefixes': []}, '/project/.venv/Scripts/python.exe')
     rules = settings['permissions']

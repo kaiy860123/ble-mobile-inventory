@@ -38,6 +38,8 @@ Google 官方 CLI `agy` 已安裝，版本 1.5.18；以既有登入執行無讀�
 
 ## 操作命令
 
+2026-11-28 新增 AG-005：四／六 Anchor 離線比較工具、獨立測試及實驗說明。已先保留所有已驗收分支，將乾淨 worker 接到 e353b35，再派送 queue/AG-005.json。派工／交付偵測／匯入／accept 均支援 AG-005，沿用相同範圍、執行鎖與依賴保護。當次查核既有 heartbeat 為 PAUSED，本輪由當前聊天直接執行 CLI 接續，不另外建立監看排程或自動改回 ACTIVE。
+
 ```text
 python scripts/antigravity-bridge.py status
 python scripts/antigravity-bridge.py run AG-001

@@ -1,0 +1,17 @@
+{
+  "id": "AG-005",
+  "revision": 1,
+  "branch": "antigravity/AG-005-anchor-comparison",
+  "depends_on": ["AG-003", "AG-004"],
+  "allowed_paths": [
+    "scripts/compare-anchor-subsets.py",
+    "tests/test_anchor_comparison.py",
+    "docs/testing/six-anchor-experiment.md",
+    "docs/handoffs/AG-005-result.md"
+  ],
+  "allowed_prefixes": [],
+  "handoff": "docs/handoffs/AG-005-result.md",
+  "execution_phase": "edit_only",
+  "verification_owner": "Codex",
+  "instruction": "實作六Anchor與原四Anchor的公平離線比較工具及實驗說明，由Codex接續執行與驗收。先讀docs/handoffs/HW-003-static-calibration.md、src/ble_inventory/engine.py、src/ble_inventory/config.py、src/contracts/observation.schema.json、scripts/evaluate-run.py及tests/test_engine.py。背景：上輪候選模型T01有效位置156降至19，候選已拒絕並回退，不得復用候選為正式改善；現有資料只有A01-A04，A05/A06尚未刷機與量測。工具CLI建議 positional observations(JSONL)、config(JSON)，--baseline-anchors A01,A02,A03,A04、--expanded-anchors A01,A02,A03,A04,A05,A06、--truth 可選JSONL、--max-time-delta-s 預設0.25、--output。可import InventoryEngine及normalize_config，純離線、零網路與零部署。兩個engine使用deepcopy相同config，只移除不屬各組的anchor設定與anchor observations；保留同批Target觀測、timestamp、sequence、source、高度、模型與濾波，冷啟動且snapshot(now=batch timestamp)。基準必須為expanded真子集、至少3個非重複且確為anchor的ID；所有expanded ID須存在設定且在原始觀測實際出現，缺A05/A06明確拒絕，不能把四Anchor資料標成六Anchor。校驗完整原始batch後才過濾，拒絕混合source/scanner、重複倒序、空資料；尊重原schema，真值不得進入engine。輸出schema_version、raw/config SHA256、兩組ID、輸入批數、source、版本與評估限制；每組各設備有效位置數按position_at去重，僅quality=valid且有新position_at才算。若有truth，以position_at對齊最近truth且不超容差，僅計水平誤差，缺scanner真值不報RPi誤差；每組分別列N/MAE/RMSE/P50/P95，另列兩模型共同有效同timestamp的N與各組RMSE。沒有真值就error metrics=null，有效數仍可報；沒有事先評估時點就正式成功率=null，不以原始批數事後充當分母。輸出不含私密config、憑證或主機資訊，不覆寫輸入。測試要有獨立幾何合成資料與手算/已知誤差、四六組確實使用不同Anchor但相同Target資料、冷啟動可重現、cached position去重、共同樣本與各自有效樣本區分、無truth/僅Target truth、缺額外Anchor拒絕、輸入非法/混合/重複倒序、真值不送solver，測試標synthetic不能冒充physical。實驗文件用白話說明：A05/A06位置僅候選未量測；實體固定方向與高度，先六Anchor錄製再用同資料作四/六ablation，以新保留點和至少三條不同轉折路徑驗證，預先定義時點及容許新鮮度才算成功率。分開看RPi誤差、Target誤差、可用性，不能夾座標到室內邊界或放寬門檻製造改善。參數校正/演算法改動另開實驗，不混入四六比較。不得改src/firmware/config/infra或其他人檔案；不得登入RPi/AWS、不碰實測原始檔。交接列完整檔案、預計命令、限制，明寫測試未執行由Codex接續，最後獨立行狀態：ready_for_review。"
+}

@@ -87,7 +87,7 @@ def deliveries(repo):
     result = []
     for line in output.splitlines():
         branch, sha = line.split('\t')
-        for task_id in ('AG-001', 'AG-002', 'AG-003', 'AG-004'):
+        for task_id in ('AG-001', 'AG-002', 'AG-003', 'AG-004', 'AG-005'):
             if f'/{task_id}-' not in branch:
                 continue
             try:
@@ -109,7 +109,7 @@ def status(config):
 
 
 def dispatch(config, task_id, resume=False):
-    if task_id not in ('AG-001', 'AG-003', 'AG-004'):
+    if task_id not in ('AG-001', 'AG-003', 'AG-004', 'AG-005'):
         raise ValueError('Task is not in the explicit dispatch queue')
     repo = Path(config['checkout'])
     check_repo(repo)
@@ -216,7 +216,7 @@ def main():
             finally:
                 lock.unlink()
         else:
-            if args.task not in ('AG-001', 'AG-002', 'AG-003', 'AG-004'):
+            if args.task not in ('AG-001', 'AG-002', 'AG-003', 'AG-004', 'AG-005'):
                 raise ValueError('Unknown task')
             repo = Path(config['checkout'])
             check_repo(repo)

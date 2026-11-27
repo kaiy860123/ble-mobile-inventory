@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install platformio==6.2.0
-      - run: pio run --project-dir firmware -e A01 -e A02 -e A03 -e A04 -e T01 -e T02
+      - run: pio run --project-dir firmware -e A01 -e A02 -e A03 -e A04 -e A05 -e A06 -e T01 -e T02
       - uses: actions/upload-artifact@v4
         with:
           name: xiao-firmware

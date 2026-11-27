@@ -21,9 +21,9 @@
       "title": "自動派工與雙向交接",
       "owner": "Codex heartbeat＋官方 agy",
       "status": "verified",
-      "scope": "官方 CLI 派工、交付、Codex 驗收循環已實際執行",
+      "scope": "CLI派工／交付已驗；既有heartbeat目前PAUSED，本輪當前聊天接續",
       "evidence": "AG-001／002／003 已 accept；AG-004 本輪交付與驗收完成，12 個橋接器測試通過",
-      "next": "依佇列及交付接續，保留 SHA／fingerprint／驗收證據"
+      "next": "AG-005由當前聊天接續審查；保留既有排程狀態，不宣稱背景正在運作"
     },
     {
       "id": "CORE",
@@ -68,7 +68,7 @@
       "status": "in_progress",
       "scope": "六設備／斷電恢復功能通過；校正候選未接受，精度待改善",
       "evidence": "TEST-037：候選T01有效位置156→19；TEST-038／039功能通過",
-      "next": "受控朝向／高度與獨立路徑重測，預先定義定位成功率分母"
+      "next": "A05/A06編譯已通過，待逐塊辨識刷機與實測擺放；固定模型先比較四／六Anchor"
     },
     {
       "id": "SIM-001",
@@ -132,6 +132,15 @@
       "scope": "已重寫為 12 頁白話說明＋8 頁技術附錄，待使用者閱讀回饋",
       "evidence": "TEST-029：20 頁逐頁檢查，保留公式與手算例；原工程稿留存",
       "next": "使用者閱讀新版前 12 頁；Gazebo 場景與實驗資料仍待組員交付"
+    },
+    {
+      "id": "AG-005",
+      "title": "六 Anchor 擴充與公平比較",
+      "owner": "Antigravity 開發＋Codex 整合",
+      "status": "in_progress",
+      "scope": "官方CLI已派工四／六比較工具、獨立測試與實驗說明；未交付驗收",
+      "evidence": "TEST-040：A05/A06編譯成功、bridge13與完整非browser156案通過，worker基準e353b35",
+      "next": "Codex審查交付並執行測試；備品逐塊刷入、量測後錄製八設備實測"
     }
   ]
 }

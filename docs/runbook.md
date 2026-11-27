@@ -48,7 +48,7 @@ python scripts/deploy-rpi.py <RPi-IP> --user <帳號> --password-auth --install-
 ./.venv/Scripts/python.exe scripts/flash-device.py A01 --port COM5
 ```
 
-初始刷 A01–A04、T01–T02。備品可刷 A05 或 T03，再修改場地名單。`firmware/platformio.ini` 固定工具鏈與 NimBLE 版本。若工具鏈下載失敗，保留錯誤並重試或改用 CI 編譯產物；不得把未編譯的程式說成刷機成功。
+初始刷 A01–A04、T01–T02。六 Anchor 實驗使用備品 A05、A06，再將實測座標與高度加入場地名單；T03 環境保留供其他配置。新增兩塊尚待實際 USB 辨識、刷機與 BLE 驗證，支援編譯不等於已刷入。`firmware/platformio.ini` 固定工具鏈與 NimBLE 版本。若工具鏈下載失敗，保留錯誤並重試或改用 CI 編譯產物；不得把未編譯的程式說成刷機成功。
 
 ## 現場校正
 
