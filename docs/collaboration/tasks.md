@@ -59,6 +59,7 @@
 - 負責：使用者接線／標記，Codex 執行刷機與查核。
 - 狀態：in_progress；2026-11-27 A01–A04、T01、T02 六塊皆已刷機、Windows BLE 各別收到並成功解碼；RPi SSH／HTTP 仍 timeout，收包及校正／定位尚未完成（TEST-021–026，交接 HW-001-flashing.md）。
 - 最新排程：使用者指定同時通電實驗待處理，先完成 AWS；不自動要求接線或開始實體收包。
+- 2026-11-28 更新：使用者要求準備實測。已建立 docs/testing/physical-checklist.md、座標量測空表與只讀收包檢查器；目前舊位址 SSH／HTTP 逾時，待確認目前 IP 與通電。尚未開始六塊同收或定位。
 - 驗收：每個 ID 對應實體標籤、RPi 實際收到封包、Anchor 座標與天線高度實測、校正樣本完整。
 
 ## SIM-001 — Gazebo 觀測串接
@@ -80,3 +81,4 @@
 - 範圍：22 頁繁體中文工程交接，含資料契約、時鐘／座標、RSSI 公式、可執行接入命令、真值評估、正常／異常測試、分工與交付清單。
 - Antigravity 交付 slides JSON、操作指南與 handoff；Codex 逐項核對實作、執行必要命令、建立可編輯簡報並逐頁渲染驗收。
 - 允許檔案見 queue/AG-004.json；禁止編造 Gazebo／實體／RPi 已串接。六塊同時通電實驗依使用者指示待辦。
+- 2026-11-28 使用者回饋難理解，由 Codex 直接重寫同一份簡報：前 12 頁白話分工與開工、後 8 頁技術附錄。入口為 docs/handoffs/AG-004-start-here.md；原 22 頁工程版資料保留，未覆寫 Antigravity 原交付。新內容與版型保存為 AG-004-readable-*。

@@ -1,0 +1,8 @@
+device_id,role,x_m,y_m,antenna_height_m,coordinate_usage,measured_at,notes
+A01,anchor,,,,solver_config,,
+A02,anchor,,,,solver_config,,
+A03,anchor,,,,solver_config,,
+A04,anchor,,,,solver_config,,
+T01,target,,,,separate_truth_only,,
+T02,target,,,,separate_truth_only,,
+RPi01,scanner,,,,separate_truth_xy_known_height_allowed,,

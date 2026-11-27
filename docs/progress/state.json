@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27",
+  "updated_at": "2026-11-28",
   "baseline": "f2c1d0c + AG-004 f7430b2（Codex 修訂交接教材，非模擬驗收）",
   "milestones": [
     {
@@ -47,10 +47,10 @@
       "id": "RPI",
       "title": "RPi 收集服務",
       "owner": "Codex",
-      "status": "verified",
-      "scope": "既有部署／尚無專題 Tag",
-      "evidence": "TEST-009、TEST-010：systemd、HTTP、BLE discovery",
-      "next": "接收刷機後的 XIAO 封包"
+      "status": "blocked",
+      "scope": "歷史部署已驗，當前舊位址連線逾時，未完成新版更新",
+      "evidence": "TEST-009／010 歷史證據；TEST-029：SSH／HTTP 兩埠均逾時，未登入",
+      "next": "使用者回覆 hostname -I 目前 IP；恢復連線後先唯讀確認服務、藍牙與版本"
     },
     {
       "id": "CDX-SETTINGS",
@@ -66,9 +66,9 @@
       "title": "刷機與實體精度實驗",
       "owner": "使用者＋Codex",
       "status": "in_progress",
-      "scope": "六塊刷機與各別 Windows BLE 實收完成（6/6），定位待驗",
-      "evidence": "TEST-021–026：A01–A04、T01、T02 upload SUCCESS、Flash 雜湊通過；均成功解碼 BLE 廣播",
-      "next": "使用者指定同時通電實驗待處理；後續恢復 RPi 網路、六塊同時收包、座標量測及 RSSI 校正"
+      "scope": "六塊刷機已驗；實機測試單、量測空表與只讀收包工具已準備",
+      "evidence": "TEST-021–026 各別 BLE 已驗；TEST-029 檢查器 6 測試、非 browser 155 passed；RPi 舊位址仍逾時",
+      "next": "取得 RPi 目前 IP 與六塊通電狀態；先同收，再量測／校正／定位"
     },
     {
       "id": "SIM-001",
@@ -128,10 +128,10 @@
       "id": "AG-004",
       "title": "Gazebo 組員整合交接簡報",
       "owner": "Antigravity 內容／Codex 驗收",
-      "status": "verified",
-      "scope": "22 頁交接教材與操作範例；非 Gazebo 實驗完成",
-      "evidence": "TEST-028：JSON／數值／本地 API／合成評估通過；橋接器 12 passed；22 頁逐頁 QA、PowerPoint 匯出已存",
-      "next": "使用者將交接教材交組員；SIM-001 場景、航線、觀測與真值待提供"
+      "status": "in_progress",
+      "scope": "已重寫為 12 頁白話說明＋8 頁技術附錄，待使用者閱讀回饋",
+      "evidence": "TEST-029：20 頁逐頁檢查，保留公式與手算例；原工程稿留存",
+      "next": "使用者閱讀新版前 12 頁；Gazebo 場景與實驗資料仍待組員交付"
     }
   ]
 }

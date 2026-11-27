@@ -247,3 +247,12 @@ TEST-NNN — 測試名稱
 - 合成評估 skipped_unmatched=0；90／85／65 個有效位置，RMSE 1.106／0.802／0.349 m，與既有基準一致；非新增 Gazebo 或 BLE 性能證據。
 - 可編輯雲端簡報 22 頁逐頁原尺寸渲染檢查，修訂 4／9／15 頁再次檢查；6 個原生表格與 2 頁原生流程圖。PowerPoint 匯出儲存成功；桌面 PowerPoint 相容性未測。
 - 詳細範圍與發現：docs/reviews/2026-11-27-AG-004.md。未進行 RPi、實體通電或新 AWS 部署。
+
+## TEST-029：白話交接與實機測試準備（2026-11-28）
+
+- Codex 直接重寫同一雲端簡報為 20 頁：12 頁白話分工與實作，8 頁技術附錄；原工程稿與 Antigravity 交付 SHA 保留。20 頁逐頁原尺寸渲染，修訂第 7 頁後再看；加入 MAE／RMSE 手算例，屬數學示例。
+- 舊 RPi 位址唯讀 TCP 檢查：22／8080 均 TimeoutError，耗時 8.04s；證據 artifacts/rpi-preflight-20261128.json。沒有 SSH 登入、部署或硬體測試通過的證據。
+- 新增 scripts/check-physical-readiness.py，僅輪詢本地 API，要求 physical／ble、active 且無 input_error，同一次 run_id，僅接受檢查開始後的 last_seen；不控制巡查，不推估遺失率或精度。
+- Python 3.12.10；新增 6 案例檢查新觀測、舊快照、合成來源、錯模式、停止與輸入錯誤。`python -m pytest -q tests/test_hardware_readiness.py`：6 passed；最終 `python -m pytest -q --ignore=tests/browser`：155 passed in 3.51s。--help 可正常執行。
+- 現場測試單與空白量測表已備妥；座標、校正、六設備同收、定位及 AWS physical 通路均待實測。未用單元測試替代硬體證據。
+- 進度產生器僅支援四種狀態，首次以 ready_for_review 填入時 assertion 阻止輸出；改以 in_progress 並在範圍明示待閱讀回饋後重新產生成功，未擴充看板狀態。
