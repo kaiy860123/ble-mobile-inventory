@@ -271,3 +271,53 @@ TEST-NNN — 測試名稱
 - 新任務 20261127T172421Z_physical_b7bbeb，重啟後 15 秒、15 次取樣仍全六 ID；physical／ble 正確。
 - 設定 GET／preview 200，revision 不變。CUA 真實開啟 RPi 網頁：六設備接收、Target 2、定位資料不足；座標欄位與預覽可用，示例警示正確，取消返回未保存。
 - 不包含量測、實測座標保存、精度或 AWS physical；cloud.enabled=false，未傳裝置憑證。
+
+## TEST-032：實測高度保存與未校正靜態基準（2026-11-28）
+
+- 讀取使用者已保存的 measured Anchor／Target 高度，將 RPi 1.20 m 改為本輪回報的 0.90 m；preview／save 成功，除 scanner_height_m 外設定不變，新 run_id 20261127T174653Z_physical_bd3ffe。RPi／Target XY 僅另存評估參考。
+- 使用者確認位置不變且全通電後，再採約 45 秒，44 快照。排除確認時間窗外舊位置，evaluate-run.py 對分離的固定真值、position_at 去重，三設備各 43 有效位置，skipped_unmatched=0。
+- RPi／T01／T02 的 MAE=1.332／1.196／1.887 m、RMSE=1.522／1.196／1.890 m；完整 P50／P95、真值來源與單點限制見 HW-003。尚未校正，未代表移動巡查精度。
+- 初始彙整錯用實際取得快照數為預定分母，已保留初稿並移除分母、重新產生正式 summary，成功率為未提供；來源與誤差結果不變。修正的是本地採樣 helper，未改共用彙整器。
+
+## TEST-033：第二已知位置校正採樣（2026-11-28）
+
+- 使用者指定第二點 (1.5,0)、高度 0.9 m，採獨立巡查 35 秒，六設備均收到，每 ID 30–32 筆去重 RSSI 觀測；保存 samples／CSV／replay／manifest，結束此校正巡查，舊資料保留。
+- 合併第一與第二點，依實際已知三維距離檢查跨度，六 ID 皆未達 log10 距離跨度 0.3；不強行擬合或套用參數。第三點待使用者到位。
+
+## TEST-034：第三點採樣與校正參數拒絕（2026-11-28）
+
+- 使用者指定第三點 (2.3,3.7)、高度 0.78 m。以設定交易只將 RPi 高度 0.90 改 0.78，其他配置不變，再用獨立巡查採 35 秒，六 ID 各 31–33 個去重 RSSI 觀測；完整資料保存。
+- 合併三點，四 Anchor 距離跨度通過，T01=1.680／T02=1.970 仍不足；A01 診斷擬合 n=−0.155，不在 0.5–6 合理範圍。
+- 實際執行既有 calibrate-rssi.py，以 A01 fitted path-loss exponent implausible 退出，未產生 candidate-three-points.json，未套用任何校正參數。此為預期資料品質保護，非將失敗當通過。
+- 依實測不一致新增靠近 A01 的第四點採樣計畫；待使用者到位。T02 斷電測試與校正後保留點／移動驗證尚未執行。
+
+## TEST-035：第四點模型與保留點同原始資料比較（2026-11-28）
+
+- 第四點 (0.5,0)、高度 0.80 m，35 秒採樣：六 ID 各 19–33 筆。四點合併後各設備 125–139 筆，距離跨度及 n 範圍皆通過，候選模型產生成功。
+- 原子備份／保存只更新每設備 P1m／n，normalize_config 通過，座標與 cloud 不變，服務重啟 active。後續保留點僅將已知高度改 0.60 m；模型固定，訓練 SHA256 不變。
+- 保留點 (1.7,1.3,0.6)，新巡查 20261127T180754Z_physical_a69c49，45 快照；下載原始 observations，使用相同 45 批資料冷啟動重播原模型／候選。共同有效 RPi／T01／T02 位置數 45／29／25，RMSE 原模型 2.467／4.646／3.174 m、候選 2.745／0.893／3.027 m。
+- 各模型有效樣本不同，全表與限制見 HW-003；原始資料未刪選以改善數字，保留點未加入訓練。結果混合，不宣稱整體校正改善或真實移動巡查通過。
+
+## TEST-036：移動巡查錄製中斷（2026-11-28，未通過／待重測）
+
+- 新開移動巡查 20261127T181107Z_physical_4a1206 後，使用者要求稍等並重新上電。HTTP timeout，錄製程序已退出；部分逐筆快照已落盤，另寫 interruption／manifest 明示 route_completed=false。
+- 未取得路徑完成確認，不產生正式移動精度、RPi 路徑真值、T02 斷電或網路復原通過結論。停止後未再發硬體請求，等待使用者已上電／新 IP。
+
+## TEST-037：完整移動比較、候選拒絕與回退（2026-11-28）
+
+- 使用者重新上電後六 ID／候選持久保存及時鐘已查核，再開新巡查；使用者明確確認路徑完成。取得 172 快照、176 原始觀測批，run_id=20261127T181538Z_physical_b3a149。
+- 執行本地 capture-motion-resilient.py、retrieve-and-compare-motion-02.py，以同原始資料冷啟動比較原模型／候選，XY 只進評估。共同有效 T01 19 筆 RMSE 3.656→1.874 m、T02 129 筆 2.683→2.473 m；但各自有效 T01 156→19、T02 156→132，不能只報較低條件誤差。
+- 結論：候選不接受。rollback-rssi-model.py 以設定雜湊檢查、normalize_config、備份及原子保存，只還原 RSSI 覆寫參數；保留實測座標、最新 0.60 m 高度、cloud=false 及歷史。服務 active，六設備 API distance_m 與原參數逐項吻合。
+- Python 3.12.10／NumPy 2.5.5 離線，RPi Python 3.13.5／NumPy 2.5.5。證據 measurements-20261128/motion-02 的 manifest、paired-comparison、quality-reasons 與 rollback。沒有移動 RPi 軌跡真值，不報該誤差；正式成功率、延遲未量測。
+
+## TEST-038：T02 斷電／復電去重（2026-11-28，功能通過）
+
+- 使用者明確確認 T02 切電及接回。watch-t02-off.py／watch-t02-on.py 讀取同一 physical 巡查 20261127T182101Z_physical_a26b2b，分別保存 56／26 快照。
+- 斷電：T02 stale、不可見，其他五設備可見；可見 Target 2→1、已盤點保持 2，最後模型有效位置與時間保留。復電：收到更新 last_seen，六設備可見，Target 可見回 2、已盤點仍 2，連續三次檢查通過。
+- artifacts/hardware/t02-off-01 與 t02-on-01 保存狀態與明確操作者事件。不是位置準確性、精確切電延遲或額外獨立路徑的證據。
+
+## TEST-039：Anchor 不足與恢復（2026-11-28，功能通過）
+
+- 使用者只斷開 A03、A04，watch-anchor-insufficient.py 在同一巡查保存 12 快照；只剩 A01／A02 新鮮，掃描器與兩 Target 均不足，position_at 連續不再更新。
+- 兩 Target 持續可見，已盤點與可見數均為 2。沒有將舊位置當新有效位置；未放寬門檻。證據 artifacts/hardware/anchor-insufficient-01/result.json。
+- 使用者確認 A03、A04 已上電，watch-anchor-recovery.py 保存 89 快照，末三次六 ID 新鮮、可見，盤點與可見 Target 仍 2。掃描器恢復 valid、新 position_at；末快照 T01 valid、T02 因 RSSI 殘差過大仍 insufficient，不宣稱全部 Target 有效定位恢復。證據 anchor-recovery-01/result.json；全程同一 run_id，服務保持 active。

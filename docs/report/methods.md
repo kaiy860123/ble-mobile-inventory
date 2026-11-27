@@ -67,6 +67,16 @@ r(d)=P_{d_0}-10n\log_{10}(d/d_0)+\varepsilon
 
 實作：`positioning.py:rssi_to_distance`、`scripts/calibrate-rssi.py`。每設備設定優先於封包參考值，最後才使用全域範例值。
 
+### 3.1 RSSI 誤差的距離敏感度
+
+固定 P1m 與 n 時，RSSI 增加 \(\Delta r\) dB 的距離比例為：
+
+\[
+\frac{\widehat d(s+\Delta r)}{\widehat d(s)}=10^{-\Delta r/(10n)}.
+\]
+
+例如本次四點候選 T01 的 n≈0.677，3 dB 差值可使距離相差約 2.77 倍；n=2 時約 1.41 倍。這是模型敏感度試算，不是位置誤差保證或信賴區間，也不能把 RSSI 擬合殘差直接當作公尺誤差。因此 n 落在允許範圍不等於實際定位改善，仍須用未參與校正的資料驗證，見 HW-003／TEST-035。
+
 ## 4. 高度差與水平距離
 
 在已知天線高度差 \(\Delta h\) 下：

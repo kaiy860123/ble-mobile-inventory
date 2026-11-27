@@ -1,6 +1,6 @@
 {
   "updated_at": "2026-11-28",
-  "baseline": "8aab2aa（RPi 新版部署與六設備同收；定位待驗）",
+  "baseline": "8aab2aa（RPi實機；收訊及失聯功能通過，定位精度待改善）",
   "milestones": [
     {
       "date": "2026-12-10",
@@ -30,9 +30,9 @@
       "title": "兩階段定位與座標轉換",
       "owner": "Codex",
       "status": "verified",
-      "scope": "軟體／合成案例",
-      "evidence": "TEST-002、TEST-005；TEST-016 完整 Python 40 passed；後續橋接器 10 案例另測",
-      "next": "實體校正與獨立真值評估"
+      "scope": "軟體數值已驗；實機精度未通過，保留靜止抖動限制",
+      "evidence": "TEST-032／035／037：靜態、保留點及176批移動比較，候選未接受",
+      "next": "改善RSSI與幾何品質，以獨立路徑及預定時點驗證"
     },
     {
       "id": "WEB",
@@ -41,34 +41,34 @@
       "status": "verified",
       "scope": "新版已發布；公開端唯讀",
       "evidence": "GitHub Actions 45841081307 success；公開回放正常，座標設定不可用；TEST-013",
-      "next": "RPi 新版部署與實機資料串接"
+      "next": "RPi座標介面已驗；實機AWS即時資料串接待完成"
     },
     {
       "id": "RPI",
       "title": "RPi 收集服務",
       "owner": "Codex",
       "status": "verified",
-      "scope": "新版已部署，六設備 physical 收包已驗；場地未量測",
-      "evidence": "TEST-030／031：原主機金鑰相符、藍牙／服務正常、60 秒六 ID 新觀測、重啟後 15 秒仍全收",
-      "next": "量測 Anchor／天線高度、校正 RSSI，執行定位及斷電測試"
+      "scope": "新版服務運行；六設備收訊及失聯恢復通過",
+      "evidence": "TEST-038／039：同一巡查Target與Anchor切電復電、盤點去重通過",
+      "next": "保留目前量測設定與原RSSI模型，後續接入AWS physical"
     },
     {
       "id": "CDX-SETTINGS",
       "title": "Anchor 座標編輯",
       "owner": "Codex",
       "status": "verified",
-      "scope": "RPi 座標設定及無寫入預覽可用；實測值待填",
-      "evidence": "TEST-031：GET／preview 200、revision 不變；CUA 開啟欄位、預覽示例警示、取消返回",
-      "next": "填入實測 Anchor 座標與高度後保存新巡查；本輪未保存"
+      "scope": "實測座標與各點高度已保存，最新0.60 m；RSSI已回退",
+      "evidence": "TEST-037：只回退RSSI覆寫，座標／高度／cloud與歷史保留，六ID測距核對吻合",
+      "next": "後續模型變更仍先備份、預覽／核對，不覆蓋實測座標"
     },
     {
       "id": "HW-001",
       "title": "刷機與實體精度實驗",
       "owner": "使用者＋Codex",
       "status": "in_progress",
-      "scope": "六塊刷機與 RPi 同收通過；校正／定位／斷電待驗",
-      "evidence": "TEST-030：60 秒全六 ID、66 批 raw、Target 盤點／可見各 2；TEST-031 重啟後仍全收",
-      "next": "等 T02 斷電確認；量測場地與天線高度，校正後轉折巡查及獨立真值評估"
+      "scope": "六設備／斷電恢復功能通過；校正候選未接受，精度待改善",
+      "evidence": "TEST-037：候選T01有效位置156→19；TEST-038／039功能通過",
+      "next": "受控朝向／高度與獨立路徑重測，預先定義定位成功率分母"
     },
     {
       "id": "SIM-001",
@@ -86,7 +86,7 @@
       "status": "verified",
       "scope": "AWS Sydney 與 Pages 已部署／合成雲端通路通過；RPi 未接",
       "evidence": "TEST-027：TLS→IoT→Cognito WSS 合成通路、觀看者發布拒絕通過；CI 45974522232 與 Pages success；公開登入表單已查核",
-      "next": "使用本地私密觀看登入檔；RPi 憑證傳送、即時 BLE 與六塊同時通電實驗依使用者安排待處理"
+      "next": "RPi憑證傳送、physical BLE發布與公開端接收待驗；維持0元現金支出"
     },
     {
       "id": "AG-002",
@@ -120,9 +120,9 @@
       "title": "專題報告與實驗結果",
       "owner": "Codex＋Antigravity＋組員",
       "status": "in_progress",
-      "scope": "架構與方法草稿完成",
-      "evidence": "四種 Mermaid 視圖、公式及程式對照已建立",
-      "next": "加入實機／Gazebo／AWS 證據，再產出最終繳交版"
+      "scope": "靜態、保留點、移動比較及功能測試已記錄，結果非最終版",
+      "evidence": "HW-003／TEST-032–039：混合結果、候選拒絕及回退均保留",
+      "next": "補足獨立重複路徑、Gazebo及AWS physical；不以有效誤差掩蓋缺解"
     },
     {
       "id": "AG-004",
